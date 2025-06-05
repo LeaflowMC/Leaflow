@@ -3,9 +3,6 @@ plugins {
     `java-library`
 }
 
-group = "io.github.leaflowmc"
-version = project.properties["leaflow_version"]!!
-
 repositories {
     mavenCentral()
 }
