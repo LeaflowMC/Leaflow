@@ -8,6 +8,8 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
+
     implementation(libs.kotlinx.serialization.core)
 
     testImplementation(kotlin("test"))
