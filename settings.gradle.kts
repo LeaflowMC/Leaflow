@@ -5,3 +5,6 @@ plugins {
 
 rootProject.name = "leaflow"
 include("common")
+include("protocol")
+include("server")
+include("serialization")
