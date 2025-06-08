@@ -2,29 +2,28 @@ package io.github.leaflowmc.protocol.packets.registry
 
 import io.github.leaflowmc.protocol.packets.ClientPacket
 import io.github.leaflowmc.protocol.packets.ProtocolStage
-import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
-import kotlinx.serialization.KSerializer
+import kotlin.reflect.KClass
 
-object ClientPacketRegistry : PacketRegistry<ClientPacket> {
-    val STATUS = createPacketInfo<ClientPacket> {
+object ClientPacketRegistry {
+    val STATUS = createClientPacketInfo<ClientPacket> {
     }
-    val LOGIN = createPacketInfo<ClientPacket> {
+    val LOGIN = createClientPacketInfo<ClientPacket> {
     }
-    val CONFIGURATION = createPacketInfo<ClientPacket> {
+    val CONFIGURATION = createClientPacketInfo<ClientPacket> {
     }
-    val PLAY = createPacketInfo<ClientPacket> {
+    val PLAY = createClientPacketInfo<ClientPacket> {
     }
 
-    override fun get(
-        id: Int,
+    operator fun get(
+        clazz: KClass<ClientPacket>,
         stage: ProtocolStage
-    ): KSerializer<out ClientPacket>? {
+    ): Int? {
         return when (stage) {
             ProtocolStage.HANDSHAKE -> null
-            ProtocolStage.STATUS -> STATUS[id]
-            ProtocolStage.LOGIN -> LOGIN[id]
-            ProtocolStage.CONFIGURATION -> CONFIGURATION[id]
-            ProtocolStage.PLAY -> PLAY[id]
+            ProtocolStage.STATUS -> STATUS[clazz]
+            ProtocolStage.LOGIN -> LOGIN[clazz]
+            ProtocolStage.CONFIGURATION -> CONFIGURATION[clazz]
+            ProtocolStage.PLAY -> PLAY[clazz]
         }
     }
 }

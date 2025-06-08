@@ -5,20 +5,20 @@ import io.github.leaflowmc.protocol.packets.ServerPacket
 import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
 import kotlinx.serialization.KSerializer
 
-object ServerPacketRegistry : PacketRegistry<ServerPacket> {
-    val HANDSHAKE = createPacketInfo<ServerPacket> {
+object ServerPacketRegistry {
+    val HANDSHAKE = createServerPacketInfo<ServerPacket> {
         addPacket(ServerboundHandshakePacket.serializer())
     }
-    val STATUS = createPacketInfo<ServerPacket> {
+    val STATUS = createServerPacketInfo<ServerPacket> {
     }
-    val LOGIN = createPacketInfo<ServerPacket> {
+    val LOGIN = createServerPacketInfo<ServerPacket> {
     }
-    val CONFIGURATION = createPacketInfo<ServerPacket> {
+    val CONFIGURATION = createServerPacketInfo<ServerPacket> {
     }
-    val PLAY = createPacketInfo<ServerPacket> {
+    val PLAY = createServerPacketInfo<ServerPacket> {
     }
 
-    override fun get(
+    operator fun get(
         id: Int,
         stage: ProtocolStage
     ): KSerializer<out ServerPacket>? {
