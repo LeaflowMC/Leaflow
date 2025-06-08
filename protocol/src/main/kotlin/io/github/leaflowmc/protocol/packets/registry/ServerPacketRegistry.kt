@@ -3,6 +3,7 @@ package io.github.leaflowmc.protocol.packets.registry
 import io.github.leaflowmc.protocol.ProtocolStage
 import io.github.leaflowmc.protocol.packets.ServerPacket
 import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
+import io.github.leaflowmc.protocol.packets.status.ServerboundStatusRequestPacket
 import kotlinx.serialization.KSerializer
 
 object ServerPacketRegistry {
@@ -10,6 +11,7 @@ object ServerPacketRegistry {
         addPacket(ServerboundHandshakePacket.serializer())
     }
     val STATUS = createServerPacketInfo<ServerPacket> {
+        addPacket(ServerboundStatusRequestPacket.serializer())
     }
     val LOGIN = createServerPacketInfo<ServerPacket> {
     }
