@@ -1,6 +1,6 @@
 package io.github.leaflowmc.protocol.packets.registry
 
-import io.github.leaflowmc.protocol.packets.ProtocolStage
+import io.github.leaflowmc.protocol.ProtocolStage
 import io.github.leaflowmc.protocol.packets.ServerPacket
 import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
 import kotlinx.serialization.KSerializer

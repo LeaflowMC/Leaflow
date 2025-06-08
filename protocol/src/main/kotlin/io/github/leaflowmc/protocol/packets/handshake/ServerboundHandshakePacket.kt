@@ -1,9 +1,9 @@
 package io.github.leaflowmc.protocol.packets.handshake
 
 import io.github.leaflowmc.common.utils.VarInt
-import io.github.leaflowmc.protocol.packets.ProtocolStage
+import io.github.leaflowmc.protocol.ProtocolStage
 import io.github.leaflowmc.protocol.packets.ServerPacket
-import io.github.leaflowmc.protocol.packets.ServerPacketListener
+import io.github.leaflowmc.protocol.ServerPacketListener
 import kotlinx.serialization.Serializable
 
 @Serializable
