@@ -15,7 +15,7 @@ open class LeaflowFactoryImpl protected constructor() : LeaflowFactory {
         return ServerPacketListenerImpl(player)
     }
 
-    override fun createPlayer(socket: Socket, packetsChannel: Channel<ClientPacket>): Player {
-        return PlayerImpl(socket, packetsChannel)
+    override fun createPlayer(packetsChannel: Channel<ClientPacket>): Player {
+        return PlayerImpl(packetsChannel)
     }
 }

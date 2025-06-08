@@ -2,11 +2,9 @@ package io.github.leaflowmc.server.player
 
 import io.github.leaflowmc.protocol.ProtocolStage
 import io.github.leaflowmc.protocol.packets.ClientPacket
-import io.ktor.network.sockets.*
 import kotlinx.coroutines.channels.Channel
 
 open class PlayerImpl(
-    private val socket: Socket,
     private val packetsChannel: Channel<ClientPacket>
 ) : Player {
     override var protocolStage = ProtocolStage.HANDSHAKE

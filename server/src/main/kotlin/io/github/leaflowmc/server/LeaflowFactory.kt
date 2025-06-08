@@ -8,5 +8,5 @@ import kotlinx.coroutines.channels.Channel
 
 interface LeaflowFactory {
     fun createServerPacketListener(player: Player): ServerPacketListener
-    fun createPlayer(socket: Socket, packetsChannel: Channel<ClientPacket>): Player
+    fun createPlayer(packetsChannel: Channel<ClientPacket>): Player
 }
