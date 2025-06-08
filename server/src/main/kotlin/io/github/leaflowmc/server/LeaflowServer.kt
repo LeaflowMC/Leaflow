@@ -5,8 +5,8 @@ import io.github.leaflowmc.common.utils.writeVarInt
 import io.github.leaflowmc.protocol.packets.ClientPacket
 import io.github.leaflowmc.protocol.packets.registry.ClientPacketRegistry
 import io.github.leaflowmc.protocol.packets.registry.ServerPacketRegistry
-import io.github.leaflowmc.serialization.minecraftDecoder
-import io.github.leaflowmc.serialization.minecraftEncoder
+import io.github.leaflowmc.serialization.minecraft_format.minecraftDecoder
+import io.github.leaflowmc.serialization.minecraft_format.minecraftEncoder
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*

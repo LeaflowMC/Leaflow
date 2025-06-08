@@ -1,4 +1,4 @@
-package io.github.leaflowmc.serialization
+package io.github.leaflowmc.serialization.minecraft_format
 
 import io.github.leaflowmc.common.utils.VarInt
 import io.github.leaflowmc.common.utils.readBoolean
@@ -12,7 +12,6 @@ import io.github.leaflowmc.common.utils.readShort
 import io.github.leaflowmc.common.utils.readVarInt
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder.Companion.DECODE_DONE
