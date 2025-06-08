@@ -6,8 +6,6 @@ import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
 import kotlinx.serialization.KSerializer
 
 object ClientPacketRegistry : PacketRegistry<ClientPacket> {
-    val HANDSHAKE = createPacketInfo<ClientPacket> {
-    }
     val STATUS = createPacketInfo<ClientPacket> {
     }
     val LOGIN = createPacketInfo<ClientPacket> {
@@ -22,7 +20,7 @@ object ClientPacketRegistry : PacketRegistry<ClientPacket> {
         stage: ProtocolStage
     ): KSerializer<out ClientPacket>? {
         return when (stage) {
-            ProtocolStage.HANDSHAKE -> HANDSHAKE[id]
+            ProtocolStage.HANDSHAKE -> null
             ProtocolStage.STATUS -> STATUS[id]
             ProtocolStage.LOGIN -> LOGIN[id]
             ProtocolStage.CONFIGURATION -> CONFIGURATION[id]
