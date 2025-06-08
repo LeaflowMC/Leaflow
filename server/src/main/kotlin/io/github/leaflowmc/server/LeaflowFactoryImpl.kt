@@ -1,10 +1,12 @@
 package io.github.leaflowmc.server
 
+import io.github.leaflowmc.protocol.packets.ClientPacket
 import io.github.leaflowmc.protocol.packets.ServerPacketListener
 import io.github.leaflowmc.server.player.Player
 import io.github.leaflowmc.server.player.PlayerImpl
 import io.github.leaflowmc.server.player.ServerPacketListenerImpl
 import io.ktor.network.sockets.Socket
+import kotlinx.coroutines.channels.Channel
 
 open class LeaflowFactoryImpl protected constructor() : LeaflowFactory {
     companion object Instance : LeaflowFactoryImpl()
@@ -13,7 +15,7 @@ open class LeaflowFactoryImpl protected constructor() : LeaflowFactory {
         return ServerPacketListenerImpl(player)
     }
 
-    override fun createPlayer(socket: Socket): Player {
-        return PlayerImpl(socket)
+    override fun createPlayer(socket: Socket, packetsChannel: Channel<ClientPacket>): Player {
+        return PlayerImpl(socket, packetsChannel)
     }
 }

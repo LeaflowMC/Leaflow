@@ -1,18 +1,26 @@
 package io.github.leaflowmc.server
 
 import io.github.leaflowmc.common.utils.readVarInt
+import io.github.leaflowmc.protocol.packets.ClientPacket
 import io.github.leaflowmc.protocol.packets.registry.ServerPacketRegistry
 import io.github.leaflowmc.serialization.minecraftDecoder
+import io.github.leaflowmc.serialization.minecraftEncoder
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.*
 import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.selects.select
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.serializer
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.io.ByteArrayOutputStream
+import java.io.OutputStream
+import kotlin.reflect.KClass
 
 @OptIn(ExperimentalSerializationApi::class, ExperimentalStdlibApi::class)
 class LeaflowServer(
@@ -27,6 +35,7 @@ class LeaflowServer(
     /**
      * Main loop of ktor, processing packets.
      */
+    @OptIn(InternalSerializationApi::class)
     suspend fun start() = coroutineScope {
         val selectorManager = SelectorManager(Dispatchers.IO)
         val serverSocket = aSocket(selectorManager).tcp().bind(address, port)
@@ -37,35 +46,64 @@ class LeaflowServer(
             val socket = serverSocket.accept()
             LOGGER.info("Connection from ${socket.remoteAddress}")
 
-            launch(Dispatchers.IO) {
-                // TODO add player
-                val player = factory.createPlayer(socket)
-                val packetListener = factory.createServerPacketListener(player)
-                val rChannel = socket.openReadChannel()
+            val packetsChannel = Channel<ClientPacket>(Channel.BUFFERED)
+            val player = factory.createPlayer(socket, packetsChannel)
+            val packetListener = factory.createServerPacketListener(player)
 
-                while (true) {
-                    val size = rChannel.toInputStream().readVarInt()
-                    val stream = rChannel.readByteArray(size).inputStream()
-                    val protocolId = stream.readVarInt()
-                    val serializer = ServerPacketRegistry[protocolId, player.protocolStage]
+            launch {
+                val readJob = launch(Dispatchers.IO) {
+                    // TODO add player
+                    val rChannel = socket.openReadChannel()
 
-                    if (serializer == null) {
-                        // TODO player name instead of ip
-                        LOGGER.error("Unknown packet id in ${player.protocolStage.name}: 0x${protocolId.toHexString()} (received from ${socket.remoteAddress})")
-                        break
+                    while (true) {
+                        val size = rChannel.toInputStream().readVarInt()
+                        val stream = rChannel.readByteArray(size).inputStream()
+                        val protocolId = stream.readVarInt()
+                        val serializer = ServerPacketRegistry[protocolId, player.protocolStage]
+
+                        if (serializer == null) {
+                            // TODO player name instead of ip
+                            LOGGER.error("Unknown packet id in ${player.protocolStage.name}: 0x${protocolId.toHexString()} (received from ${socket.remoteAddress})")
+                            break
+                        }
+                        val packet = stream.minecraftDecoder().decodeSerializableValue(serializer)
+                        try {
+                            packet.handle(packetListener)
+                        } catch (e: Throwable) {
+                            LOGGER.error("Error while handling packet $packet", e)
+                            break
+                        }
                     }
-                    val packet = stream.minecraftDecoder().decodeSerializableValue(serializer)
-                    try {
-                        packet.handle(packetListener)
-                    } catch (e: Throwable) {
-                        LOGGER.error("Error while handling packet $packet", e)
-                        break
+                    rChannel.cancel()
+                }
+
+                val writeJob = launch(Dispatchers.IO) {
+                    val writeChannel = socket.openWriteChannel(false)
+
+                    for (packet: ClientPacket in packetsChannel) {
+                        val outputStream = ByteArrayOutputStream()
+                        outputStream.minecraftEncoder().encodeSerializableValue(
+                            packet::class.serializer() as KSerializer<in ClientPacket>,
+                            packet
+                        )
+                        writeChannel.writeByteArray(outputStream.toByteArray())
+                        writeChannel.flush()
+                    }
+                    writeChannel.flushAndClose()
+                }
+
+                select {
+                    readJob.onJoin {
+                        readJob.join()
+                    }
+                    writeJob.onJoin {
+                        writeJob.join()
                     }
                 }
-                // TODO disconnect packet
-                // TODO remove player
-                rChannel.cancel()
-                socket.close()
+                withContext(NonCancellable) {
+                    // TODO remove player
+                    socket.close()
+                }
             }
         }
     }
