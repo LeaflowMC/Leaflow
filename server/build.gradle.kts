@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.ktor.network)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.log4j.api)
 
