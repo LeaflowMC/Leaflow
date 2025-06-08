@@ -1,4 +1,4 @@
-package io.github.leaflowmc.serialization
+package io.github.leaflowmc.serialization.minecraft_format
 
 import io.github.leaflowmc.common.utils.*
 import kotlinx.serialization.ExperimentalSerializationApi
