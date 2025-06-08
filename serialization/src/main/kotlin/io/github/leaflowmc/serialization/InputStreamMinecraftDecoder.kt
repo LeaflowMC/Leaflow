@@ -21,7 +21,7 @@ import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import java.io.InputStream
 
-private val varIntSerializer = serializer<VarInt>()
+val varIntSerializer = serializer<VarInt>()
 
 @OptIn(ExperimentalSerializationApi::class)
 class InputStreamMinecraftDecoder(
@@ -58,6 +58,8 @@ class InputStreamMinecraftDecoder(
             else -> super.decodeSerializableValue(deserializer)
         }
     }
+
+    override fun decodeNotNullMark(): Boolean = decodeBoolean()
 }
 
 fun InputStream.minecraftDecoder(serializersModule: SerializersModule = EmptySerializersModule()): InputStreamMinecraftDecoder {
