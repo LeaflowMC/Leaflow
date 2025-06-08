@@ -1,7 +1,7 @@
 package io.github.leaflowmc.protocol.packets.registry
 
 import io.github.leaflowmc.protocol.packets.ClientPacket
-import io.github.leaflowmc.protocol.packets.ProtocolStage
+import io.github.leaflowmc.protocol.ProtocolStage
 import kotlin.reflect.KClass
 
 object ClientPacketRegistry {

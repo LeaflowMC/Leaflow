@@ -1,4 +1,4 @@
-package io.github.leaflowmc.protocol.packets
+package io.github.leaflowmc.protocol
 
 enum class ProtocolStage {
     HANDSHAKE,

@@ -1,7 +1,7 @@
 package io.github.leaflowmc.server
 
 import io.github.leaflowmc.protocol.packets.ClientPacket
-import io.github.leaflowmc.protocol.packets.ServerPacketListener
+import io.github.leaflowmc.protocol.ServerPacketListener
 import io.github.leaflowmc.server.player.Player
 import io.github.leaflowmc.server.player.PlayerImpl
 import io.github.leaflowmc.server.player.ServerPacketListenerImpl

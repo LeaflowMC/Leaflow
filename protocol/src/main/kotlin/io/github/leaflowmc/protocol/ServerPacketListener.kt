@@ -1,4 +1,4 @@
-package io.github.leaflowmc.protocol.packets
+package io.github.leaflowmc.protocol
 
 import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
 

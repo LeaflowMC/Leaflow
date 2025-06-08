@@ -1,7 +1,7 @@
 package io.github.leaflowmc.server.player
 
-import io.github.leaflowmc.protocol.packets.ProtocolStage
-import io.github.leaflowmc.protocol.packets.ServerPacketListener
+import io.github.leaflowmc.protocol.ProtocolStage
+import io.github.leaflowmc.protocol.ServerPacketListener
 import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
 
 open class ServerPacketListenerImpl(val player: Player) : ServerPacketListener {
