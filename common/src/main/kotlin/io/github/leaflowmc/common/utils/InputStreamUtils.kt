@@ -45,20 +45,18 @@ fun InputStream.readShort(): Short {
 
 fun InputStream.readInt(): Int {
     var int = 0
-    var i = 0
     repeat(Int.SIZE_BYTES) {
-        int = int or (readByte().toInt() shl i)
-        i += 8
+        int = (int shl 8) or readUByte().toInt()
     }
     return int
 }
 
 fun InputStream.readLong(): Long {
-    var i = 0L
+    var long = 0L
     repeat(Long.SIZE_BYTES) {
-        i = (i shl 8) or readByte().toLong()
+        long = (long shl 8) or readUByte().toLong()
     }
-    return i
+    return long
 }
 
 fun InputStream.readFloat() = java.lang.Float.intBitsToFloat(readInt())
