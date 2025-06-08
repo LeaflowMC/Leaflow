@@ -12,7 +12,7 @@ dependencies {
     api(project(":protocol"))
     implementation(project(":serialization"))
 
-    implementation(libs.ktor.network)
+    implementation(libs.netty.all)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)

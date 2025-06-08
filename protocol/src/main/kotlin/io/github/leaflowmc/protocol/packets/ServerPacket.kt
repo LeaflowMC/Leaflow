@@ -1,7 +1,6 @@
 package io.github.leaflowmc.protocol.packets
 
-import io.github.leaflowmc.protocol.ServerPacketListener
+import io.github.leaflowmc.protocol.listener.server.ServerPacketListener
 
-interface ServerPacket {
-    suspend fun handle(listener: ServerPacketListener)
+interface ServerPacket<L : ServerPacketListener, T : ServerPacket<L, T>> : Packet<L, T> {
 }
