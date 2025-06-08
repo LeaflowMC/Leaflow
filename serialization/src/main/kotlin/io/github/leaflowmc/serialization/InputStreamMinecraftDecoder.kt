@@ -37,7 +37,7 @@ class InputStreamMinecraftDecoder(
     override fun decodeLong(): Long = stream.readLong()
     override fun decodeFloat(): Float = stream.readFloat()
     override fun decodeDouble(): Double = stream.readDouble()
-    override fun decodeChar(): Char = stream.readShort().toInt().toChar()
+    override fun decodeChar(): Char = stream.readByte().toInt().toChar()
     override fun decodeString(): String = stream.readPrefixedString()
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = stream.readVarInt()
     fun decodeVarInt() = stream.readVarInt()
