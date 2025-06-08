@@ -1,7 +1,9 @@
 package io.github.leaflowmc.server
 
 import io.github.leaflowmc.common.utils.readVarInt
+import io.github.leaflowmc.common.utils.writeVarInt
 import io.github.leaflowmc.protocol.packets.ClientPacket
+import io.github.leaflowmc.protocol.packets.registry.ClientPacketRegistry
 import io.github.leaflowmc.protocol.packets.registry.ServerPacketRegistry
 import io.github.leaflowmc.serialization.minecraftDecoder
 import io.github.leaflowmc.serialization.minecraftEncoder
@@ -81,11 +83,24 @@ class LeaflowServer(
                     val writeChannel = socket.openWriteChannel(false)
 
                     for (packet: ClientPacket in packetsChannel) {
+                        val protocolId = ClientPacketRegistry[packet::class as KClass<ClientPacket>, player.protocolStage]
+
+                        if (protocolId == null) {
+                            LOGGER.error("Trying to write an unknown packet: $packet")
+                            continue
+                        }
+
                         val outputStream = ByteArrayOutputStream()
                         outputStream.minecraftEncoder().encodeSerializableValue(
                             packet::class.serializer() as KSerializer<in ClientPacket>,
                             packet
                         )
+
+                        writeChannel.toOutputStream().let {
+                            it.writeVarInt(outputStream.size())
+                            it.writeVarInt(protocolId)
+                        }
+
                         writeChannel.writeByteArray(outputStream.toByteArray())
                         writeChannel.flush()
                     }

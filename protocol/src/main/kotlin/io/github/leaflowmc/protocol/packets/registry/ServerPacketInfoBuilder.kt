@@ -4,10 +4,10 @@ import kotlinx.serialization.KSerializer
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.TYPE)
 @DslMarker
-annotation class PacketInfoDsl
+annotation class ServerPacketInfoDsl
 
-@PacketInfoDsl
-class PacketInfoBuilder<T> {
+@ServerPacketInfoDsl
+class ServerPacketInfoBuilder<T> {
     private var counter = 0
     private val map = mutableMapOf<Int, KSerializer<out T>>()
 
@@ -24,6 +24,6 @@ class PacketInfoBuilder<T> {
     }
 }
 
-inline fun <T>createPacketInfo(block: @PacketInfoDsl PacketInfoBuilder<T>.() -> Unit): Map<Int, KSerializer<out T>> {
-    return PacketInfoBuilder<T>().apply(block).build()
+inline fun <T>createServerPacketInfo(block: @ServerPacketInfoDsl ServerPacketInfoBuilder<T>.() -> Unit): Map<Int, KSerializer<out T>> {
+    return ServerPacketInfoBuilder<T>().apply(block).build()
 }
