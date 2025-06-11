@@ -9,19 +9,38 @@ import io.github.leaflowmc.server.player.PlayerConnection
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.apache.logging.log4j.LogManager
-import java.nio.channels.ClosedChannelException
 
 class PlayerConnectionImpl(
     override val server: LeaflowServer,
-    override val protocol: ProtocolStage
+    initial: ProtocolStage
 ) : ChannelInboundHandlerAdapter(), PlayerConnection {
     companion object {
         private val LOGGER = LogManager.getLogger()
     }
 
-    var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
+    override var protocol: ProtocolStage = initial
+        set(value) {
+            packetListener = server.factory.createServerPacketListenerFor(value, this)
+
+            val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
+                channel.pipeline().replace(ctx.name(), "decoder", PacketDecoder(value))
+                channel.config().isAutoRead = true
+            })
+
+            try {
+                future.syncUninterruptibly()
+            } catch (e: Throwable) {
+                LOGGER.error("Exception during protocol change", e)
+                throw e
+            }
+            field = value
+        }
+
+    private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private lateinit var channel: Channel
@@ -52,19 +71,4 @@ class PlayerConnectionImpl(
         channel.writeAndFlush(packet)
     }
 
-    override fun changeProtocol(protocol: ProtocolStage) {
-        packetListener = server.factory.createServerPacketListenerFor(protocol, this)
-
-        val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
-            channel.pipeline().replace(ctx.name(), "decoder", PacketDecoder(protocol))
-            channel.config().isAutoRead = true
-            LOGGER.info("changed back to connection in $protocol")
-        })
-
-        try {
-            future.syncUninterruptibly()
-        } catch (_: ClosedChannelException) {
-            LOGGER.info("Closed connection during protocol change")
-        }
-    }
 }
