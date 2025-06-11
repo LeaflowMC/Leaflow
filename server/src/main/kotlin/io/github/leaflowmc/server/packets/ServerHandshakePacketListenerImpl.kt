@@ -13,7 +13,7 @@ class ServerHandshakePacketListenerImpl(
     override fun handshake(packet: ServerboundHandshakePacket) {
         when (packet.next) {
             ProtocolStage.STATUS,
-            ProtocolStage.LOGIN -> playerConnection.changeProtocol(packet.next)
+            ProtocolStage.LOGIN -> playerConnection.protocol = packet.next
 
             else -> throw IllegalStateException("Player tries to progress in a forbidden protocol stage")
         }
