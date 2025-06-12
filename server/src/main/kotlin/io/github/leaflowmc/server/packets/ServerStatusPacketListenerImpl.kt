@@ -3,6 +3,7 @@ package io.github.leaflowmc.server.packets
 import io.github.leaflowmc.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.protocol.packets.ping.AbstractServerboundPingRequestPacket
 import io.github.leaflowmc.protocol.packets.status.ServerboundStatusRequestPacket
+import io.github.leaflowmc.protocol.packets.status.StatusResponse
 import io.github.leaflowmc.server.player.PlayerConnection
 
 class ServerStatusPacketListenerImpl(
@@ -13,5 +14,13 @@ class ServerStatusPacketListenerImpl(
     }
 
     override fun statusRequest(packet: ServerboundStatusRequestPacket) {
+        playerConnection.sendPacket(
+            ClientboundStatusResponsePacket(
+                StatusResponse(
+                    StatusResponse.Version("1.21.5", 770),
+                    null, null, true
+                )
+            )
+        )
     }
 }
