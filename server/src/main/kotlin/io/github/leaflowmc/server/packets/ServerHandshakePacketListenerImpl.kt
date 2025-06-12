@@ -12,10 +12,11 @@ class ServerHandshakePacketListenerImpl(
 ) : ServerHandshakePacketListener {
     override fun handshake(packet: ServerboundHandshakePacket) {
         when (packet.next) {
-            ProtocolStage.STATUS,
-            ProtocolStage.LOGIN -> playerConnection.protocol = packet.next
+            ServerboundHandshakePacket.Intent.LOGIN -> playerConnection.protocol = ProtocolStage.LOGIN
+            ServerboundHandshakePacket.Intent.STATUS -> playerConnection.protocol = ProtocolStage.STATUS
+            ServerboundHandshakePacket.Intent.TRANSFER -> TODO("transfer is not implemented")
 
-            else -> throw IllegalStateException("Player tries to progress in a forbidden protocol stage")
+            ServerboundHandshakePacket.Intent.NONE -> error("illegal enum.")
         }
     }
 }

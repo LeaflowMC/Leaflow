@@ -13,7 +13,7 @@ data class ServerboundHandshakePacket(
     val protocolVersion: VarInt,
     val address: String,
     val port: UShort,
-    val next: ProtocolStage
+    val next: Intent
 ) : ServerPacket<ServerHandshakePacketListener, ServerboundHandshakePacket> {
     override fun handle(listener: ServerHandshakePacketListener) {
         listener.handshake(this)
@@ -25,4 +25,11 @@ data class ServerboundHandshakePacket(
 
     override val terminal: Boolean
         get() = true
+
+    enum class Intent {
+        NONE,
+        STATUS,
+        LOGIN,
+        TRANSFER;
+    }
 }
