@@ -5,6 +5,7 @@ import io.github.leaflowmc.protocol.listener.server.ServerPlayPacketListener
 import io.github.leaflowmc.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.protocol.packets.ServerPacket
 import io.github.leaflowmc.protocol.packets.type.PacketType
+import io.github.leaflowmc.protocol.packets.type.ServerPlayPackets
 import io.github.leaflowmc.protocol.packets.type.ServerStatusPackets
 import kotlinx.serialization.Serializable
 
@@ -30,6 +31,6 @@ class ServerboundPlayPingRequestPacket(
     override val timestamp: Long
 ) : AbstractServerboundPingRequestPacket<ServerPlayPacketListener, ServerboundPlayPingRequestPacket> {
     override fun getType(): PacketType<ServerboundPlayPingRequestPacket> {
-        TODO()
+        return ServerPlayPackets.PING_REQUEST
     }
 }
