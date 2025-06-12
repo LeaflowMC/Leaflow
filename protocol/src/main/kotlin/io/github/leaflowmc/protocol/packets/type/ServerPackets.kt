@@ -6,6 +6,7 @@ import io.github.leaflowmc.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.protocol.packets.ServerPacket
 import io.github.leaflowmc.protocol.packets.handshake.ServerboundHandshakePacket
+import io.github.leaflowmc.protocol.packets.ping.ServerboundStatusPingRequestPacket
 import io.github.leaflowmc.protocol.packets.status.ServerboundStatusRequestPacket
 
 object ServerHandshakePackets : ProtocolInfo<ServerHandshakePacketListener, ServerPacket<ServerHandshakePacketListener, *>>() {
@@ -14,6 +15,7 @@ object ServerHandshakePackets : ProtocolInfo<ServerHandshakePacketListener, Serv
 
 object ServerStatusPackets : ProtocolInfo<ServerStatusPacketListener, ServerPacket<ServerStatusPacketListener, *>>() {
     val STATUS_REQUEST = addPacket(ServerboundStatusRequestPacket.serializer())
+    val PING_REQUEST = addPacket(ServerboundStatusPingRequestPacket.serializer())
 }
 
 fun getServerProtocolFor(stage: ProtocolStage): ProtocolInfo<ServerPacketListener, ServerPacket<ServerPacketListener, *>> {
