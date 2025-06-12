@@ -42,7 +42,6 @@ class PlayerConnectionImpl(
 
     private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
 
-    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private lateinit var channel: Channel
 
     override fun channelActive(ctx: ChannelHandlerContext) {
