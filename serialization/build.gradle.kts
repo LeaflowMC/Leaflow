@@ -3,9 +3,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-group = "io.github.leaflowmc"
-version = "0.1.0"
-
 repositories {
     mavenLocal()
     mavenCentral()
