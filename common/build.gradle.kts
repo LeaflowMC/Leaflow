@@ -11,6 +11,7 @@ repositories {
 dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.netty.buffer)
+    implementation(libs.kyori.adventure.nbt)
 
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation(libs.junit.jupiter.engine)
