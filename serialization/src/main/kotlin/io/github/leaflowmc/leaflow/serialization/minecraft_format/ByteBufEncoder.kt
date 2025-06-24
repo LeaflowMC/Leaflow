@@ -3,7 +3,10 @@ package io.github.leaflowmc.leaflow.serialization.minecraft_format
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
+import io.github.leaflowmc.leaflow.serialization.nbt.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.nbt.encodeToNbt
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufOutputStream
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -12,6 +15,9 @@ import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
+import net.kyori.adventure.nbt.BinaryTagIO
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import java.io.OutputStream
 
 @OptIn(ExperimentalSerializationApi::class)
 class ByteBufEncoder(
@@ -69,10 +75,17 @@ class ByteBufEncoder(
     }
 
     override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
-        when (serializer.descriptor) {
-            varIntSerializer.descriptor -> encodeVarInt((value as VarInt).value)
-
-            else -> super.encodeSerializableValue(serializer, value)
+        if (serializer.descriptor == varIntSerializer.descriptor) {
+            encodeVarInt((value as VarInt).value)
+        } else if (serializer is AnyToNbtSerializer<T>) {
+            BinaryTagIO.writer()
+                .writeNameless(
+                    encodeToNbt(serializer.surrogate, value) as CompoundBinaryTag,
+                    ByteBufOutputStream(byteBuf) as OutputStream,
+                    BinaryTagIO.Compression.NONE
+                )
+        } else {
+            super.encodeSerializableValue(serializer, value)
         }
     }
 }
