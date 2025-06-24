@@ -1,25 +1,18 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
-import io.github.leaflowmc.leaflow.serialization.nbt.encodeToNbt
+import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.IntArrayBinaryTag
 import net.kyori.adventure.nbt.IntBinaryTag
 import net.kyori.adventure.nbt.ListBinaryTag
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
-class NbtEncoderTest {
+class NbtDecoderTest {
     @Test
     fun testCompound() {
-        val input = Car(
-            0xff0000,
-            listOf(
-                Person("p1k0chu", 69),
-                Person("p2k0chu", 70)
-            )
-        )
-
-        val output = CompoundBinaryTag.builder()
+        val input = CompoundBinaryTag.builder()
             .putInt("color", 0xff0000)
             .put("passengers",
                 ListBinaryTag.builder()
@@ -34,34 +27,42 @@ class NbtEncoderTest {
                     .build())
             .build()
 
-        assertEquals(output, encodeToNbt(input))
+        val output = Car(
+            0xff0000,
+            listOf(
+                Person("p1k0chu", 69),
+                Person("p2k0chu", 70)
+            )
+        )
+
+
+        assertEquals(output, decodeFromNbt(input))
     }
 
     @Test
     fun testPrimitive() {
-        val input = 69
+        val input = IntBinaryTag.intBinaryTag(69)
+        val output = 69
 
-        val output = IntBinaryTag.intBinaryTag(69)
-
-        assertEquals(output, encodeToNbt(input))
+        assertEquals(output, decodeFromNbt(input))
     }
 
     @Test
     fun testCollection() {
-        val input = (1..69).toList()
-
-        val output = ListBinaryTag.builder()
+        val input = ListBinaryTag.builder()
             .add((1..69).map { IntBinaryTag.intBinaryTag(it) })
             .build()
 
-        assertEquals(output, encodeToNbt(input))
+        val output = (1..69).toList()
+
+        assertContentEquals(output, decodeFromNbt<List<Int>>(input))
     }
 
     @Test
     fun testArray() {
-        val input = (1..69).toList().toIntArray()
-        val output = IntArrayBinaryTag.intArrayBinaryTag(*(1..69).toList().toIntArray())
+        val input = IntArrayBinaryTag.intArrayBinaryTag(*(1..69).toList().toIntArray())
+        val output = (1..69).toList().toIntArray()
 
-        assertEquals(output, encodeToNbt(input))
+        assertContentEquals(output, decodeFromNbt(input))
     }
 }
