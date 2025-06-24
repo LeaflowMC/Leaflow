@@ -5,7 +5,10 @@ package io.github.leaflowmc.leaflow.serialization.minecraft_format
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.readPrefixedString
 import io.github.leaflowmc.leaflow.common.utils.readVarInt
+import io.github.leaflowmc.leaflow.serialization.nbt.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.ByteBufInputStream
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -16,6 +19,8 @@ import kotlinx.serialization.encoding.CompositeDecoder.Companion.DECODE_DONE
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
+import net.kyori.adventure.nbt.BinaryTagIO
+import java.io.InputStream
 
 val varIntSerializer = serializer<VarInt>()
 
@@ -41,11 +46,19 @@ abstract class AbstractByteBufDecoder : AbstractDecoder() {
 
     @Suppress("UNCHECKED_CAST") // unchecked cast my beloved
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
-        return when (deserializer.descriptor) {
-            varIntSerializer.descriptor -> {
-                VarInt(decodeVarInt()) as T
-            }
-            else -> super.decodeSerializableValue(deserializer)
+        return if (deserializer.descriptor == varIntSerializer.descriptor) {
+            VarInt(decodeVarInt()) as T
+        } else if (deserializer is AnyToNbtSerializer<T>) {
+            BinaryTagIO.reader()
+                .readNameless(
+                    ByteBufInputStream(buffer) as InputStream,
+                    BinaryTagIO.Compression.NONE
+                )
+                .let {
+                    decodeFromNbt(deserializer.surrogate, it)
+                }
+        } else {
+            super.decodeSerializableValue(deserializer)
         }
     }
 
