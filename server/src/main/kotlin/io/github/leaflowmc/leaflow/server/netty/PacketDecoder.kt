@@ -3,7 +3,7 @@ package io.github.leaflowmc.leaflow.server.netty
 import io.github.leaflowmc.leaflow.common.utils.readVarInt
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.packets.type.getServerProtocolFor
-import io.github.leaflowmc.leaflow.serialization.minecraft_format.decodePacket
+import io.github.leaflowmc.leaflow.serialization.minecraft_format.decode
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
@@ -33,7 +33,7 @@ class PacketDecoder(
             return
         }
 
-        val packet = buffer.decodePacket(packetType.serializer)
+        val packet = buffer.decode(packetType.serializer)
         out.add(packet)
 
         // prevent more packets from reading while we are switching protocols
