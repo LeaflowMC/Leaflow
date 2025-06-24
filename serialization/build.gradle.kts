@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.netty.buffer)
+    implementation(libs.kyori.adventure.nbt)
 
     testImplementation(kotlin("test"))
 }
