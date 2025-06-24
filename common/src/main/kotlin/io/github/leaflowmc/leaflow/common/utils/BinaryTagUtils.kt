@@ -15,3 +15,22 @@ fun Any.toBinaryTag(): BinaryTag {
         else -> throw IllegalArgumentException("NBT format doesn't support this primitive")
     }
 }
+
+/**
+ * @return If binary tag is a primitive, returns the value
+ *
+ * null otherwise
+ */
+fun BinaryTag.getPrimitive(): Any? {
+    return when (this) {
+        is ByteBinaryTag -> value()
+        is ShortBinaryTag -> value()
+        is IntBinaryTag -> value()
+        is LongBinaryTag -> value()
+        is FloatBinaryTag -> value()
+        is DoubleBinaryTag -> value()
+        is StringBinaryTag -> value()
+
+        else -> null
+    }
+}
