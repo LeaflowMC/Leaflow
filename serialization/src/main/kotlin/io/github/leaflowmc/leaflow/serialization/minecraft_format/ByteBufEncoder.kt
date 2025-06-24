@@ -1,18 +1,20 @@
 package io.github.leaflowmc.leaflow.serialization.minecraft_format
 
+import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
 import io.netty.buffer.ByteBuf
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.AbstractEncoder
+import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.serializer
 
 @OptIn(ExperimentalSerializationApi::class)
-class ByteBufMinecraftEncoder(
+class ByteBufEncoder(
     val byteBuf: ByteBuf,
     override val serializersModule: SerializersModule
 ) : AbstractEncoder() {
@@ -61,16 +63,29 @@ class ByteBufMinecraftEncoder(
     override fun encodeNull() = encodeBoolean(false)
     override fun encodeNotNullMark() = encodeBoolean(true)
 
+    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
+        encodeVarInt(collectionSize)
+        return this
+    }
+
     override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
         when (serializer.descriptor) {
-            varIntSerializer.descriptor -> encodeVarInt(value as Int)
+            varIntSerializer.descriptor -> encodeVarInt((value as VarInt).value)
 
             else -> super.encodeSerializableValue(serializer, value)
         }
     }
 }
 
-fun <T> ByteBuf.encodePacket(serializer: KSerializer<T>, value: T) {
-    ByteBufMinecraftEncoder(this, EmptySerializersModule())
+fun <T> ByteBuf.encode(serializer: SerializationStrategy<T>, value: T): ByteBuf {
+    ByteBufEncoder(this, EmptySerializersModule())
         .encodeSerializableValue(serializer, value)
+
+    return this
 }
+
+inline fun <reified T> ByteBuf.encode(value: T): ByteBuf {
+    encode(serializer(), value)
+    return this
+}
+
