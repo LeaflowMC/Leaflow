@@ -13,9 +13,6 @@ dependencies {
     implementation(libs.netty.buffer)
     implementation(libs.kyori.adventure.nbt)
 
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation(libs.junit.jupiter.engine)
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
