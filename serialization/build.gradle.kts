@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.kyori.adventure.nbt)
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":commonTest"))
 }
 
 tasks.test {
