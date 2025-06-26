@@ -21,28 +21,36 @@ abstract class NbtDecoder : AbstractDecoder() {
     abstract fun decodeNbt(): BinaryTag
 
     final override fun decodeValue(): Any {
-        return checkNotNull(decodeNbt().also(::println).getPrimitive()) { "Is not a primitive" }
+        return checkNotNull(decodeNbt().getPrimitive()) { "Is not a primitive" }
     }
 
     final override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         val nbt = decodeNbt()
 
-        if (descriptor.kind == StructureKind.LIST) {
-            return when (nbt) {
-                is ListBinaryTag -> ListDecoder(nbt, serializersModule)
-                is ByteArrayBinaryTag -> ArrayDecoder(nbt.value().toTypedArray(), serializersModule)
-                is IntArrayBinaryTag -> ArrayDecoder(nbt.value().toTypedArray(), serializersModule)
-                is LongArrayBinaryTag -> ArrayDecoder(nbt.value().toTypedArray(), serializersModule)
+        return when (descriptor.kind) {
+             StructureKind.LIST -> {
+                when (nbt) {
+                    is ListBinaryTag -> ListDecoder(nbt, serializersModule)
+                    is ByteArrayBinaryTag -> ArrayDecoder(nbt.value().toTypedArray(), serializersModule)
+                    is IntArrayBinaryTag -> ArrayDecoder(nbt.value().toTypedArray(), serializersModule)
+                    is LongArrayBinaryTag -> ArrayDecoder(nbt.value().toTypedArray(), serializersModule)
 
-                else -> throw SerializationException("trying to decode a list structure, but nbt tag is not a list")
+                    else -> throw SerializationException("trying to decode a list structure, but nbt tag is not a list")
+                }
             }
-        }
 
-        if (nbt !is CompoundBinaryTag) {
-            throw SerializationException("trying to decode a compound structure, but nbt tag is not a compound")
-        }
+            StructureKind.MAP,
+            StructureKind.OBJECT,
+            StructureKind.CLASS -> {
+                if (nbt !is CompoundBinaryTag) {
+                    throw SerializationException("trying to decode a compound structure, but nbt tag is not a compound")
+                }
 
-        return CompoundDecoder(nbt, serializersModule)
+                CompoundDecoder(nbt, serializersModule)
+            }
+
+            else -> this
+        }
     }
 }
 
