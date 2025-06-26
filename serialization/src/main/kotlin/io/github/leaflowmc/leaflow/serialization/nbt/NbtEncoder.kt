@@ -1,8 +1,10 @@
+@file:OptIn(ExperimentalSerializationApi::class)
+
 package io.github.leaflowmc.leaflow.serialization.nbt
 
 import io.github.leaflowmc.leaflow.common.utils.toBinaryTag
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationStrategy
+import io.github.leaflowmc.leaflow.serialization.classDiscriminator
+import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ByteArraySerializer
 import kotlinx.serialization.builtins.IntArraySerializer
 import kotlinx.serialization.builtins.LongArraySerializer
@@ -10,14 +12,13 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.internal.AbstractPolymorphicSerializer
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
 import net.kyori.adventure.nbt.*
 import java.util.*
 
-@OptIn(ExperimentalSerializationApi::class)
-sealed class NbtEncoder : AbstractEncoder() {
+abstract class NbtEncoder : AbstractEncoder() {
     abstract fun encodeNbt(value: BinaryTag)
 
     final override fun encodeValue(value: Any) = encodeNbt(value.toBinaryTag())
@@ -37,7 +38,28 @@ sealed class NbtEncoder : AbstractEncoder() {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
+    @OptIn(InternalSerializationApi::class)
     final override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
+        if (serializer is AbstractPolymorphicSerializer<*>) {
+            val actual = (serializer as AbstractPolymorphicSerializer<Any>)
+                .findPolymorphicSerializer(this, value!!)
+
+            val encoder = PrimitiveNbtEncoder(serializersModule)
+            actual.serialize(encoder, value)
+
+            val nbt = encoder.nbt
+            require(nbt is CompoundBinaryTag) { "Can only serialize compounds polymorphically, but got ${nbt::class.simpleName}" }
+
+            encodeNbt(
+                nbt.put(
+                    serializer.descriptor.classDiscriminator(),
+                    actual.descriptor.serialName.toBinaryTag()
+                )
+            )
+            return
+        }
+
         when (serializer.descriptor) {
             ByteArraySerializer().descriptor -> {
                 encodeNbt(ByteArrayBinaryTag.byteArrayBinaryTag(*value as ByteArray))
