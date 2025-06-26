@@ -4,16 +4,15 @@ package io.github.leaflowmc.leaflow.serialization.nbt
 
 import io.github.leaflowmc.leaflow.common.utils.getPrimitive
 import io.github.leaflowmc.leaflow.serialization.ArrayDecoder
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerializationException
+import io.github.leaflowmc.leaflow.serialization.classDiscriminator
+import kotlinx.serialization.*
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.AbstractDecoder
 import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.internal.AbstractPolymorphicSerializer
 import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
 import net.kyori.adventure.nbt.*
 import java.util.*
 
@@ -51,6 +50,28 @@ abstract class NbtDecoder : AbstractDecoder() {
 
             else -> this
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    @OptIn(InternalSerializationApi::class)
+    final override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
+        if (deserializer !is AbstractPolymorphicSerializer<*>) {
+            return super.decodeSerializableValue(deserializer)
+        }
+
+        val nbt = decodeNbt()
+        require(nbt is CompoundBinaryTag) { "Can only decode compounds polymorphically, but got ${nbt::class.simpleName}" }
+
+        val discriminator = deserializer.descriptor.classDiscriminator()
+
+        val decoder = PrimitiveNbtDecoder(nbt.remove(discriminator), serializersModule)
+
+        val actual = deserializer.findPolymorphicSerializer(
+            decoder,
+            nbt.getString(discriminator)
+        ) as DeserializationStrategy<T>
+
+        return actual.deserialize(decoder)
     }
 }
 
