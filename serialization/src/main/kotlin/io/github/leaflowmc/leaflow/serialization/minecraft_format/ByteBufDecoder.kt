@@ -5,7 +5,7 @@ package io.github.leaflowmc.leaflow.serialization.minecraft_format
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.readPrefixedString
 import io.github.leaflowmc.leaflow.common.utils.readVarInt
-import io.github.leaflowmc.leaflow.serialization.nbt.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
 import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream

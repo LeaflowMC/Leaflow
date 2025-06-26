@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
-import io.github.leaflowmc.leaflow.serialization.nbt.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
 import kotlinx.serialization.Serializable
 
 @Serializable
