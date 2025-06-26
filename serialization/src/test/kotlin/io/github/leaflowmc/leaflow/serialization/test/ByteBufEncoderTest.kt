@@ -4,9 +4,16 @@ import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.commonTest.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
+import io.github.leaflowmc.leaflow.serialization.minecraft_format.decode
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
+import io.netty.buffer.ByteBufOutputStream
+import io.netty.buffer.Unpooled
+import net.kyori.adventure.nbt.BinaryTagIO
+import net.kyori.adventure.nbt.CompoundBinaryTag
+import net.kyori.adventure.nbt.ListBinaryTag
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class ByteBufEncoderTest {
     @Test
@@ -78,5 +85,45 @@ class ByteBufEncoderTest {
             output,
             byteBufBytes { encode(input) }
         )
+    }
+
+    @Test
+    fun testWithNbt() {
+        val input = Something(
+            CarAsNbt(
+                0x00ff00,
+                listOf(
+                    Person("p1k0chu", 69),
+                    Person("p2k0chu", 70)
+                )
+            ),
+            Person("p3k0chu", 18)
+        )
+
+        val output = byteBufBytes {
+            BinaryTagIO.writer()
+                .writeNameless(
+                    CompoundBinaryTag.builder()
+                        .putInt("color", 0x00ff00)
+                        .put("passengers", ListBinaryTag.builder()
+                            .add(CompoundBinaryTag.builder()
+                                .putString("name", "p1k0chu")
+                                .putInt("age", 69)
+                                .build())
+                            .add(CompoundBinaryTag.builder()
+                                .putString("name", "p2k0chu")
+                                .putInt("age", 70)
+                                .build())
+                            .build())
+                        .build(),
+                    ByteBufOutputStream(this),
+                    BinaryTagIO.Compression.NONE
+                )
+
+            writePrefixedString("p3k0chu")
+            writeInt(18)
+        }
+
+        assertContentEquals(output, byteBufBytes { encode(input) })
     }
 }
