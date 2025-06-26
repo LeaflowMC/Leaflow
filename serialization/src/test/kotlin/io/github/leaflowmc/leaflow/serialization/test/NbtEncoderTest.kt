@@ -64,4 +64,17 @@ class NbtEncoderTest {
 
         assertEquals(output, encodeToNbt(input))
     }
+
+    @Test
+    fun testPolymorphic() {
+        val input: Glasses = VisionGlasses(40, 50)
+
+        val output = CompoundBinaryTag.builder()
+            .putString("glasses_for", "vision")
+            .putInt("vision_left", 40)
+            .putInt("vision_right", 50)
+            .build()
+
+        assertEquals(output, encodeToNbt(input))
+    }
 }
