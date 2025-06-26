@@ -20,7 +20,7 @@ import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.serializer
 import net.kyori.adventure.nbt.BinaryTagIO
-import java.io.InputStream
+import java.io.ByteArrayOutputStream
 
 val varIntSerializer = serializer<VarInt>()
 
@@ -49,11 +49,31 @@ abstract class AbstractByteBufDecoder : AbstractDecoder() {
         return if (deserializer.descriptor == varIntSerializer.descriptor) {
             VarInt(decodeVarInt()) as T
         } else if (deserializer is AnyToNbtSerializer<T>) {
+            // ugly workaround for adventure nbt being awesome
+            // reading a binary tag will consume all the bytes in the buffer
+            // with no way to know how many were left over
+            // so to find that out, we write that nbt tag again into a new byte array
+            // and using its length move the reader index of the byte buffer
+            // TODO: write my own nbt library
+
+            val startIndex = buffer.readerIndex()
+
             BinaryTagIO.reader()
                 .readNameless(
-                    ByteBufInputStream(buffer) as InputStream,
+                    ByteBufInputStream(buffer),
                     BinaryTagIO.Compression.NONE
                 )
+                .also { nbt ->
+                    ByteArrayOutputStream()
+                        .also {
+                            BinaryTagIO.writer()
+                                .writeNameless(nbt, it, BinaryTagIO.Compression.NONE)
+                        }
+                        .size()
+                        .let {
+                            buffer.readerIndex(startIndex + it)
+                        }
+                }
                 .let {
                     decodeFromNbt(deserializer.surrogate, it)
                 }
