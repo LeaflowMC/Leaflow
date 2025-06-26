@@ -1,6 +1,7 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
 import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
+import io.github.leaflowmc.leaflow.serialization.nbt.encodeToNbt
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.IntArrayBinaryTag
 import net.kyori.adventure.nbt.IntBinaryTag
@@ -64,5 +65,18 @@ class NbtDecoderTest {
         val output = (1..69).toList().toIntArray()
 
         assertContentEquals(output, decodeFromNbt(input))
+    }
+
+    @Test
+    fun testPolymorphic() {
+        val output: Glasses = VisionGlasses(40, 50)
+
+        val input = CompoundBinaryTag.builder()
+            .putString("glasses_for", "vision")
+            .putInt("vision_left", 40)
+            .putInt("vision_right", 50)
+            .build()
+
+        assertEquals(output, decodeFromNbt(input))
     }
 }
