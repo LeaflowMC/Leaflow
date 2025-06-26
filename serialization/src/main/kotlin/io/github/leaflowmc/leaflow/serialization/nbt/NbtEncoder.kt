@@ -17,17 +17,24 @@ import net.kyori.adventure.nbt.*
 import java.util.*
 
 @OptIn(ExperimentalSerializationApi::class)
-abstract class NbtEncoder : AbstractEncoder() {
+sealed class NbtEncoder : AbstractEncoder() {
     abstract fun encodeNbt(value: BinaryTag)
 
     final override fun encodeValue(value: Any) = encodeNbt(value.toBinaryTag())
 
     final override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
-        if (descriptor.kind == StructureKind.LIST) {
-            return ListEncoder(serializersModule, ::encodeNbt)
-        }
+        return when (descriptor.kind) {
+            StructureKind.LIST -> {
+                ListEncoder(serializersModule, ::encodeNbt)
+            }
+            StructureKind.CLASS,
+            StructureKind.MAP,
+            StructureKind.OBJECT -> {
+                CompoundEncoder(serializersModule, ::encodeNbt)
+            }
 
-        return CompoundEncoder(serializersModule, ::encodeNbt)
+            else -> this
+        }
     }
 
     final override fun <T> encodeSerializableValue(serializer: SerializationStrategy<T>, value: T) {
