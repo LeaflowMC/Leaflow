@@ -1,4 +1,4 @@
-package io.github.leaflowmc.leaflow.serialization.nbt
+package io.github.leaflowmc.leaflow.common.serializer
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
