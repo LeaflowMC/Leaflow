@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
-    `java-library`
 }
 
 repositories {
@@ -9,12 +8,14 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
+
     implementation(libs.bundles.kotlinx.serialization)
-    implementation(libs.netty.buffer)
-    implementation(libs.kyori.adventure.nbt)
+
+    testImplementation(kotlin("test"))
 }
 
-tasks.named<Test>("test") {
+tasks.test {
     useJUnitPlatform()
 }
 
