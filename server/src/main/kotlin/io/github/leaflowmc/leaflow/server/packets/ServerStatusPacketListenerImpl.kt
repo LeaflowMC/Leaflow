@@ -7,6 +7,8 @@ import io.github.leaflowmc.leaflow.protocol.packets.status.ClientboundStatusResp
 import io.github.leaflowmc.leaflow.protocol.packets.status.ServerboundStatusRequestPacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.StatusResponse
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
+import io.github.leaflowmc.leaflow.text.component.PlainTextComponent
+import kotlinx.serialization.json.Json
 
 class ServerStatusPacketListenerImpl(
     val playerConnection: PlayerConnection
@@ -20,7 +22,8 @@ class ServerStatusPacketListenerImpl(
             ClientboundStatusResponsePacket(
                 StatusResponse(
                     StatusResponse.Version("1.21.5", 770),
-                    null, null, true
+                    false,
+                    playerConnection.server.motd,
                 )
             )
         )

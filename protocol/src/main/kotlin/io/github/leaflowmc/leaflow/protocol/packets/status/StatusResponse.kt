@@ -1,5 +1,7 @@
 package io.github.leaflowmc.leaflow.protocol.packets.status
 
+import io.github.leaflowmc.leaflow.common.serializer.AnyToStringJsonSerializer
+import io.github.leaflowmc.leaflow.text.component.TextComponent
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,10 +12,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 class StatusResponse(
     val version: Version,
-    val players: Players?,
-    // TODO: description: TextComponent
-    val favicon: String?,
-    val ensuresSecureChat: Boolean
+    val ensuresSecureChat: Boolean,
+    val description: TextComponent? = null,
+    val favicon: String? = null,
+    val players: Players? = null,
 ) {
     @Serializable
     data class Version(val name: String, val protocol: Int)
@@ -32,3 +34,10 @@ class StatusResponse(
         )
     }
 }
+
+object StatusResponseAsStringSerializer : AnyToStringJsonSerializer<StatusResponse>(
+    StatusResponse.serializer()
+)
+
+typealias StatusResponseAsString = @Serializable(StatusResponseAsStringSerializer::class) StatusResponse
+

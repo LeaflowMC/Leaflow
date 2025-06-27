@@ -10,6 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":serialization"))
+    implementation(project(":text"))
 
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
