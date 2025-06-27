@@ -11,11 +11,11 @@ dependencies {
     implementation(project(":common"))
     api(project(":protocol"))
     implementation(project(":serialization"))
+    implementation(project(":text"))
 
     implementation(libs.netty.all)
     implementation(libs.kotlinx.coroutines)
-    implementation(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.bundles.kotlinx.serialization)
 
     implementation(libs.log4j.api)
 

@@ -1,19 +1,17 @@
 package io.github.leaflowmc.leaflow.server
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
-import io.github.leaflowmc.leaflow.protocol.packets.type.ServerHandshakePackets
 import io.github.leaflowmc.leaflow.server.netty.PacketDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketEncoder
 import io.github.leaflowmc.leaflow.server.netty.PacketSizeDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketSizeEncoder
+import io.github.leaflowmc.leaflow.text.component.TextComponent
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.InetSocketAddress
@@ -21,7 +19,8 @@ import java.net.InetSocketAddress
 class LeaflowServerImpl(
     override val address: String,
     override val port: Int,
-    override val factory: LeaflowFactory
+    override val factory: LeaflowFactory,
+    override val motd: TextComponent?,
 ) : LeaflowServer {
     companion object {
         val LOGGER: Logger = LogManager.getLogger()
@@ -35,8 +34,6 @@ class LeaflowServerImpl(
         bossGroup = MultiThreadIoEventLoopGroup(nioFactory)
         workerGroup = MultiThreadIoEventLoopGroup(nioFactory)
     }
-
-    val scope = CoroutineScope(Dispatchers.Default)
 
     override fun start() {
         try {
@@ -76,9 +73,10 @@ class LeaflowServerImpl(
         var address = "0.0.0.0"
         var port = 25565
         var factory: LeaflowFactory = LeaflowFactoryImpl
+        var motd: TextComponent? = null
 
         fun build(): LeaflowServerImpl {
-            return LeaflowServerImpl(address, port, factory)
+            return LeaflowServerImpl(address, port, factory, motd)
         }
     }
 }
