@@ -7,7 +7,8 @@ import io.github.leaflowmc.leaflow.protocol.packets.type.ClientStatusPackets
 import io.github.leaflowmc.leaflow.protocol.packets.type.PacketType
 import kotlinx.serialization.Serializable
 
-interface ClientboundPongResponsePacket<L : ClientPingPacketListener, T : ClientboundPongResponsePacket<L, T>> : ClientPacket<L, T> {
+interface ClientboundPongPacket<L : ClientPingPacketListener, T : ClientboundPongPacket<L, T>> :
+    ClientPacket<L, T> {
     val timestamp: Long
 
     override fun handle(listener: L) {
@@ -16,8 +17,9 @@ interface ClientboundPongResponsePacket<L : ClientPingPacketListener, T : Client
 }
 
 @Serializable
-class ClientboundStatusPongResponsePacket(override val timestamp: Long) : ClientboundPongResponsePacket<ClientStatusPacketListener, ClientboundStatusPongResponsePacket> {
-    override fun getType(): PacketType<ClientboundStatusPongResponsePacket> {
+class ClientboundStatusPongPacket(override val timestamp: Long) :
+    ClientboundPongPacket<ClientStatusPacketListener, ClientboundStatusPongPacket> {
+    override fun getType(): PacketType<ClientboundStatusPongPacket> {
         return ClientStatusPackets.PONG_RESPONSE
     }
 }

@@ -1,7 +1,7 @@
 package io.github.leaflowmc.leaflow.protocol.listener.client
 
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPongResponsePacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPongPacket
 
 interface ClientPingPacketListener : ClientPacketListener {
-    fun pongResponse(packet: ClientboundPongResponsePacket<*, *>)
+    fun pongResponse(packet: ClientboundPongPacket<*, *>)
 }
