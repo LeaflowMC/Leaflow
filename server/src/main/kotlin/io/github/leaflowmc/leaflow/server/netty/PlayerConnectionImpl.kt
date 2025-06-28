@@ -77,19 +77,19 @@ class PlayerConnectionImpl(
 
     @Suppress("UNCHECKED_CAST")
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
-            try {
-                (msg as Packet<ServerPacketListener, *>).handle(packetListener)
-            } catch (e: ClassCastException) {
-                LOGGER.error(
-                    "The listener \"${packetListener::class.simpleName}\" can't handle the packet \"${msg::class.simpleName}\"",
-                    e
-                )
-                // TODO disconnect packet
-                ctx.close()
-            } catch (e: Throwable) {
-                LOGGER.error("error while handling packet \"${msg::class.simpleName}\"", e)
-                throw e
-            }
+        try {
+            (msg as Packet<ServerPacketListener, *>).handle(packetListener)
+        } catch (e: ClassCastException) {
+            LOGGER.error(
+                "The listener \"${packetListener::class.simpleName}\" can't handle the packet \"${msg::class.simpleName}\"",
+                e
+            )
+            // TODO disconnect packet
+            ctx.close()
+        } catch (e: Throwable) {
+            LOGGER.error("error while handling packet \"${msg::class.simpleName}\"", e)
+            throw e
+        }
     }
 
     override fun sendPacket(packet: ClientPacket<*, *>) {
