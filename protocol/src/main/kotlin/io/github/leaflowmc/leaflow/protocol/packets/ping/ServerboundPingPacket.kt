@@ -9,7 +9,7 @@ import io.github.leaflowmc.leaflow.protocol.packets.type.ServerPlayPackets
 import io.github.leaflowmc.leaflow.protocol.packets.type.ServerStatusPackets
 import kotlinx.serialization.Serializable
 
-interface AbstractServerboundPingRequestPacket<L : ServerPingPacketListener, T : AbstractServerboundPingRequestPacket<L, T>> : ServerPacket<L, T> {
+interface ServerboundPingPacket<L : ServerPingPacketListener, T : ServerboundPingPacket<L, T>> : ServerPacket<L, T> {
     val timestamp: Long
 
     override fun handle(listener: L) {
@@ -18,19 +18,19 @@ interface AbstractServerboundPingRequestPacket<L : ServerPingPacketListener, T :
 }
 
 @Serializable
-class ServerboundStatusPingRequestPacket(
+class ServerboundStatusPingPacket(
     override val timestamp: Long
-) : AbstractServerboundPingRequestPacket<ServerStatusPacketListener, ServerboundStatusPingRequestPacket> {
-    override fun getType(): PacketType<ServerboundStatusPingRequestPacket> {
+) : ServerboundPingPacket<ServerStatusPacketListener, ServerboundStatusPingPacket> {
+    override fun getType(): PacketType<ServerboundStatusPingPacket> {
         return ServerStatusPackets.PING_REQUEST
     }
 }
 
 @Serializable
-class ServerboundPlayPingRequestPacket(
+class ServerboundPlayPingPacket(
     override val timestamp: Long
-) : AbstractServerboundPingRequestPacket<ServerPlayPacketListener, ServerboundPlayPingRequestPacket> {
-    override fun getType(): PacketType<ServerboundPlayPingRequestPacket> {
+) : ServerboundPingPacket<ServerPlayPacketListener, ServerboundPlayPingPacket> {
+    override fun getType(): PacketType<ServerboundPlayPingPacket> {
         return ServerPlayPackets.PING_REQUEST
     }
 }
