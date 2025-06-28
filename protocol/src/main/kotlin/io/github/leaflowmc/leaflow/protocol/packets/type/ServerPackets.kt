@@ -4,11 +4,15 @@ package io.github.leaflowmc.leaflow.protocol.packets.type
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacketListener
+import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPlayPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ServerPacket
 import io.github.leaflowmc.leaflow.protocol.packets.handshake.ServerboundHandshakePacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundEncryptionResponsePacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginAcknowledgedPacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginStartPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPlayPingRequestPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundStatusPingRequestPacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.ServerboundStatusRequestPacket
@@ -20,6 +24,14 @@ object ServerHandshakePackets : ProtocolInfo<ServerHandshakePacketListener, Serv
 object ServerStatusPackets : ProtocolInfo<ServerStatusPacketListener, ServerPacket<ServerStatusPacketListener, *>>() {
     val STATUS_REQUEST = addPacket(ServerboundStatusRequestPacket.serializer())
     val PING_REQUEST = addPacket(ServerboundStatusPingRequestPacket.serializer())
+}
+
+object ServerLoginPackets : ProtocolInfo<ServerLoginPacketListener, ServerPacket<ServerLoginPacketListener, *>>() {
+    val LOGIN_START = addPacket(ServerboundLoginStartPacket.serializer())
+    val ENCRYPTION_RESPONSE = addPacket(ServerboundEncryptionResponsePacket.serializer())
+    val LOGIN_PLUGIN_RESPONSE = skipPacket()
+    val LOGIN_ACKNOWLEDGED = addPacket(ServerboundLoginAcknowledgedPacket.serializer())
+    val COOKIE_RESPONSE = skipPacket()
 }
 
 object ServerPlayPackets : ProtocolInfo<ServerPlayPacketListener, ServerPacket<ServerPlayPacketListener, *>>() {
@@ -94,7 +106,7 @@ fun getServerProtocolFor(stage: ProtocolStage): ProtocolInfo<ServerPacketListene
     return when (stage) {
         ProtocolStage.HANDSHAKE -> ServerHandshakePackets
         ProtocolStage.STATUS -> ServerStatusPackets
-        ProtocolStage.LOGIN -> TODO()
+        ProtocolStage.LOGIN -> ServerLoginPackets
         ProtocolStage.CONFIGURATION -> TODO()
         ProtocolStage.PLAY -> ServerPlayPackets
     } as ProtocolInfo<ServerPacketListener, ServerPacket<ServerPacketListener, *>>
