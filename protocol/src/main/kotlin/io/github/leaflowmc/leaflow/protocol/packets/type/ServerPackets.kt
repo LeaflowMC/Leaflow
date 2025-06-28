@@ -3,6 +3,7 @@
 package io.github.leaflowmc.leaflow.protocol.packets.type
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
+import io.github.leaflowmc.leaflow.protocol.listener.server.ServerConfigurationPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
@@ -34,6 +35,18 @@ object ServerLoginPackets : ProtocolInfo<ServerLoginPacketListener, ServerPacket
     val COOKIE_RESPONSE = skipPacket()
 }
 
+object ServerConfigurationPackets : ProtocolInfo<ServerConfigurationPacketListener, ServerPacket<ServerConfigurationPacketListener, *>>() {
+    val CLIENT_INFORMATION = skipPacket()
+    val COOKIE_RESPONSE = skipPacket()
+    val ACKNOWLEDGE_FINISH_CONFIGURATION = skipPacket()
+    val KEEP_ALIVE = skipPacket()
+    val PONG = skipPacket()
+    val PLUGIN_MESSAGE = skipPacket()
+    val RESOURCE_PACK_RESPONSE = skipPacket()
+    val KNOWN_PACKS = skipPacket()
+    val CUSTOM_CLICK_ACTION = skipPacket()
+}
+
 object ServerPlayPackets : ProtocolInfo<ServerPlayPacketListener, ServerPacket<ServerPlayPacketListener, *>>() {
     val CONFIRM_TELEPORTATION = skipPacket()
     val QUERY_BLOCK_ENTITY_TAG = skipPacket()
@@ -55,13 +68,13 @@ object ServerPlayPackets : ProtocolInfo<ServerPlayPacketListener, ServerPacket<S
     val CLOSE_CONTAINER = skipPacket()
     val CHANGE_CONTAINER_SLOT_STATE = skipPacket()
     val COOKIE_RESPONSE = skipPacket()
-    val SERVERBOUND_PLUGIN_MESSAGE = skipPacket()
+    val PLUGIN_MESSAGE = skipPacket()
     val DEBUG_SAMPLE_SUBSCRIPTION = skipPacket()
     val EDIT_BOOK = skipPacket()
     val QUERY_ENTITY_TAG = skipPacket()
     val INTERACT = skipPacket()
     val JIGSAW_GENERATE = skipPacket()
-    val SERVERBOUND_KEEP_ALIVE = skipPacket()
+    val KEEP_ALIVE = skipPacket()
     val LOCK_DIFFICULTY = skipPacket()
     val SET_PLAYER_POSITION = skipPacket()
     val SET_PLAYER_POSITION_AND_ROTATION = skipPacket()
@@ -99,6 +112,7 @@ object ServerPlayPackets : ProtocolInfo<ServerPlayPacketListener, ServerPacket<S
     val TEST_INSTANCE_BLOCK_ACTION = skipPacket()
     val USE_ITEM_ON = skipPacket()
     val USE_ITEM = skipPacket()
+    val CUSTOM_CLICK_ACTION = skipPacket()
 }
 
 fun getServerProtocolFor(stage: ProtocolStage): ProtocolInfo<ServerPacketListener, ServerPacket<ServerPacketListener, *>> {
