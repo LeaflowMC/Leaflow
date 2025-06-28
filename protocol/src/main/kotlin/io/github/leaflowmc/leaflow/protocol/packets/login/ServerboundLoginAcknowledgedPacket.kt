@@ -8,9 +8,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class ServerboundLoginAcknowledgedPacket : ServerPacket<ServerLoginPacketListener, ServerboundLoginAcknowledgedPacket> {
-    override fun getType(): PacketType<ServerboundLoginAcknowledgedPacket> {
-        return ServerLoginPackets.LOGIN_ACKNOWLEDGED
-    }
+    override val type: PacketType<ServerboundLoginAcknowledgedPacket>
+        get() = ServerLoginPackets.LOGIN_ACKNOWLEDGED
 
     override fun handle(listener: ServerLoginPacketListener) {
         listener.loginAcknowledged(this)

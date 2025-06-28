@@ -10,9 +10,8 @@ import kotlinx.serialization.Serializable
 data class ClientboundStatusResponsePacket(
     val jsonResponse: StatusResponseAsString
 ) : ClientPacket<ClientStatusPacketListener, ClientboundStatusResponsePacket> {
-    override fun getType(): PacketType<ClientboundStatusResponsePacket> {
-        return ClientStatusPackets.STATUS_RESPONSE
-    }
+    override val type: PacketType<ClientboundStatusResponsePacket>
+        get() = ClientStatusPackets.STATUS_RESPONSE
 
     override fun handle(listener: ClientStatusPacketListener) {
         listener.statusResponse(this)

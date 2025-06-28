@@ -10,9 +10,11 @@ import kotlinx.serialization.KSerializer
 
 class PacketEncoder: MessageToByteEncoder<ClientPacket<*, *>>() {
     override fun encode(ctx: ChannelHandlerContext, msg: ClientPacket<*, *>, out: ByteBuf) {
-        out.writeVarInt(msg.getType().id)
+        val type = msg.type
+
+        out.writeVarInt(type.id)
         out.encode(
-            msg.getType().serializer as KSerializer<ClientPacket<*, *>>,
+            type.serializer as KSerializer<ClientPacket<*, *>>,
             msg
         )
     }

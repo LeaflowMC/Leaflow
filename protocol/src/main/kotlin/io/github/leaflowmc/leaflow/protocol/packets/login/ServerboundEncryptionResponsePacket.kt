@@ -11,9 +11,8 @@ class ServerboundEncryptionResponsePacket(
     val sharedSecret: ByteArray,
     val verifyToken: ByteArray
 ) : ServerPacket<ServerLoginPacketListener, ServerboundEncryptionResponsePacket> {
-    override fun getType(): PacketType<ServerboundEncryptionResponsePacket> {
-        return ServerLoginPackets.ENCRYPTION_RESPONSE
-    }
+    override val type: PacketType<ServerboundEncryptionResponsePacket>
+        get() = ServerLoginPackets.ENCRYPTION_RESPONSE
 
     override fun handle(listener: ServerLoginPacketListener) {
         listener.encryptionResponse(this)

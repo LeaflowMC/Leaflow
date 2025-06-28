@@ -21,16 +21,14 @@ interface ServerboundPingPacket<L : ServerPingPacketListener, T : ServerboundPin
 class ServerboundStatusPingPacket(
     override val timestamp: Long
 ) : ServerboundPingPacket<ServerStatusPacketListener, ServerboundStatusPingPacket> {
-    override fun getType(): PacketType<ServerboundStatusPingPacket> {
-        return ServerStatusPackets.PING_REQUEST
-    }
+    override val type: PacketType<ServerboundStatusPingPacket>
+        get() = ServerStatusPackets.PING_REQUEST
 }
 
 @Serializable
 class ServerboundPlayPingPacket(
     override val timestamp: Long
 ) : ServerboundPingPacket<ServerPlayPacketListener, ServerboundPlayPingPacket> {
-    override fun getType(): PacketType<ServerboundPlayPingPacket> {
-        return ServerPlayPackets.PING_REQUEST
-    }
+    override val type: PacketType<ServerboundPlayPingPacket>
+        get() = ServerPlayPackets.PING_REQUEST
 }

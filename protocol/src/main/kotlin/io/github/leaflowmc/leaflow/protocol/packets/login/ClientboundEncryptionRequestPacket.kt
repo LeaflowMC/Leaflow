@@ -13,9 +13,8 @@ class ClientboundEncryptionRequestPacket(
     val verifyToken: ByteArray,
     val authEnabled: Boolean
 ) : ClientPacket<ClientLoginPacketListener, ClientboundEncryptionRequestPacket> {
-    override fun getType(): PacketType<ClientboundEncryptionRequestPacket> {
-        return ClientLoginPackets.ENCRYPTION_REQUEST
-    }
+    override val type: PacketType<ClientboundEncryptionRequestPacket>
+        get() = ClientLoginPackets.ENCRYPTION_REQUEST
 
     override fun handle(listener: ClientLoginPacketListener) {
         listener.encryptionRequest(this)

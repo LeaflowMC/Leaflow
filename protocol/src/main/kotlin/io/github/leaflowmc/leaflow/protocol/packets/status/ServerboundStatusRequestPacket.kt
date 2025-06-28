@@ -8,9 +8,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class ServerboundStatusRequestPacket : ServerPacket<ServerStatusPacketListener, ServerboundStatusRequestPacket> {
-    override fun getType(): PacketType<ServerboundStatusRequestPacket> {
-        return ServerStatusPackets.STATUS_REQUEST
-    }
+    override val type: PacketType<ServerboundStatusRequestPacket>
+        get() = ServerStatusPackets.STATUS_REQUEST
 
     override fun handle(listener: ServerStatusPacketListener) {
         listener.statusRequest(this)

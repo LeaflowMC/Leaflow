@@ -19,7 +19,7 @@ interface ClientboundPongPacket<L : ClientPingPacketListener, T : ClientboundPon
 @Serializable
 class ClientboundStatusPongPacket(override val timestamp: Long) :
     ClientboundPongPacket<ClientStatusPacketListener, ClientboundStatusPongPacket> {
-    override fun getType(): PacketType<ClientboundStatusPongPacket> {
-        return ClientStatusPackets.PONG_RESPONSE
-    }
+
+    override val type: PacketType<ClientboundStatusPongPacket>
+        get() = ClientStatusPackets.PONG_RESPONSE
 }
