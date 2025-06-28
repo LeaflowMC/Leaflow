@@ -5,6 +5,8 @@ import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.protocol.packets.Packet
 import io.github.leaflowmc.leaflow.server.LeaflowServer
+import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
+import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
@@ -13,6 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.apache.logging.log4j.LogManager
+import java.security.Key
+import javax.crypto.Cipher
+import javax.crypto.spec.IvParameterSpec
 
 class PlayerConnectionImpl(
     override val server: LeaflowServer,
@@ -39,6 +44,23 @@ class PlayerConnectionImpl(
             }
             field = value
         }
+
+    override var encryptionEnabled: Boolean = false
+        private set
+
+    override fun setEncryptionKey(key: Key) {
+        encryptionEnabled = true
+
+        val decipher = Cipher.getInstance("AES/CFB8/NoPadding")
+        decipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(key.encoded))
+
+        val encipher = Cipher.getInstance("AES/CFB8/NoPadding")
+        encipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(key.encoded))
+
+        channel.pipeline()
+            .addBefore("length_encoder", "encrypt", PacketEncryptor(encipher))
+            .addBefore("length_decoder", "decrypt", PacketDecryptor(decipher))
+    }
 
     private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
 

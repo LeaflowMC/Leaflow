@@ -15,12 +15,15 @@ import io.netty.channel.socket.nio.NioServerSocketChannel
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.InetSocketAddress
+import java.security.KeyPair
+import java.security.KeyPairGenerator
 
 class LeaflowServerImpl(
     override val address: String,
     override val port: Int,
     override val factory: LeaflowFactory,
     override val motd: TextComponent?,
+    override val authEnabled: Boolean
 ) : LeaflowServer {
     companion object {
         val LOGGER: Logger = LogManager.getLogger()
@@ -28,6 +31,8 @@ class LeaflowServerImpl(
 
     private val bossGroup: MultiThreadIoEventLoopGroup
     private val workerGroup: MultiThreadIoEventLoopGroup
+
+    override val keyPair: KeyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
 
     init {
         val nioFactory = NioIoHandler.newFactory()
@@ -74,9 +79,10 @@ class LeaflowServerImpl(
         var port = 25565
         var factory: LeaflowFactory = LeaflowFactoryImpl
         var motd: TextComponent? = null
+        var authEnabled = false
 
         fun build(): LeaflowServerImpl {
-            return LeaflowServerImpl(address, port, factory, motd)
+            return LeaflowServerImpl(address, port, factory, motd, authEnabled)
         }
     }
 }
