@@ -12,6 +12,10 @@ dependencies {
     implementation(libs.bundles.kotlinx.serialization)
     implementation(libs.netty.buffer)
     implementation(libs.kyori.adventure.nbt)
+
+    testImplementation(kotlin("test"))
+    testImplementation(project(":commonTest"))
+    testImplementation(project(":serialization"))
 }
 
 tasks.named<Test>("test") {
