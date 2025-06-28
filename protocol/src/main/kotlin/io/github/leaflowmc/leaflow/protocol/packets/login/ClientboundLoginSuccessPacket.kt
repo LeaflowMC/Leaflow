@@ -11,9 +11,8 @@ import kotlinx.serialization.Serializable
 class ClientboundLoginSuccessPacket(
     val gameProfile: GameProfile
 ) : ClientPacket<ClientLoginPacketListener, ClientboundLoginSuccessPacket> {
-    override fun getType(): PacketType<ClientboundLoginSuccessPacket> {
-        return ClientLoginPackets.LOGIN_SUCCESS
-    }
+    override val type: PacketType<ClientboundLoginSuccessPacket>
+        get() = ClientLoginPackets.LOGIN_SUCCESS
 
     override fun handle(listener: ClientLoginPacketListener) {
         listener.loginSuccess(this)

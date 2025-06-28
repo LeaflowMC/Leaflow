@@ -12,9 +12,8 @@ class ServerboundLoginStartPacket(
     val name: String,
     val uuid: UUIDAsLongs
 ) : ServerPacket<ServerLoginPacketListener, ServerboundLoginStartPacket> {
-    override fun getType(): PacketType<ServerboundLoginStartPacket> {
-        return ServerLoginPackets.LOGIN_START
-    }
+    override val type: PacketType<ServerboundLoginStartPacket>
+        get() = ServerLoginPackets.LOGIN_START
 
     override fun handle(listener: ServerLoginPacketListener) {
         listener.loginStart(this)

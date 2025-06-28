@@ -18,9 +18,8 @@ data class ServerboundHandshakePacket(
         listener.handshake(this)
     }
 
-    override fun getType(): PacketType<ServerboundHandshakePacket> {
-        return ServerHandshakePackets.HANDSHAKE
-    }
+    override val type: PacketType<ServerboundHandshakePacket>
+        get() = ServerHandshakePackets.HANDSHAKE
 
     override val terminal: Boolean
         get() = true
