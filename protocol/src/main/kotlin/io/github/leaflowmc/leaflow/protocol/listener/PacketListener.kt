@@ -1,4 +1,7 @@
 package io.github.leaflowmc.leaflow.protocol.listener
 
-interface PacketListener {
+import io.github.leaflowmc.leaflow.common.Disposable
+
+interface PacketListener : Disposable {
+    override fun dispose()
 }
