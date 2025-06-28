@@ -11,12 +11,14 @@ class ServerHandshakePacketListenerImpl(
     val playerConnection: PlayerConnection
 ) : ServerHandshakePacketListener {
     override fun handshake(packet: ServerboundHandshakePacket) {
-        when (packet.next) {
-            ServerboundHandshakePacket.Intent.LOGIN -> playerConnection.protocol = ProtocolStage.LOGIN
-            ServerboundHandshakePacket.Intent.STATUS -> playerConnection.protocol = ProtocolStage.STATUS
+        val stage = when (packet.next) {
+            ServerboundHandshakePacket.Intent.LOGIN -> ProtocolStage.LOGIN
+            ServerboundHandshakePacket.Intent.STATUS -> ProtocolStage.STATUS
             ServerboundHandshakePacket.Intent.TRANSFER -> TODO("transfer is not implemented")
 
             ServerboundHandshakePacket.Intent.NONE -> error("illegal enum.")
         }
+
+        playerConnection.setProtocol(stage)
     }
 }
