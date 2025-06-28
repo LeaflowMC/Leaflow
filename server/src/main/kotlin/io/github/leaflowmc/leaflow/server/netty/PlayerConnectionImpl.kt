@@ -5,15 +5,18 @@ import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.protocol.packets.Packet
 import io.github.leaflowmc.leaflow.server.LeaflowServer
+import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.ENCRYPTION_CIPHER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER_DECODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_DECODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.apache.logging.log4j.LogManager
 import java.security.Key
 import javax.crypto.Cipher
@@ -32,7 +35,7 @@ class PlayerConnectionImpl(
             packetListener = server.factory.createServerPacketListenerFor(value, this)
 
             val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
-                channel.pipeline().replace(ctx.name(), "decoder", PacketDecoder(value))
+                channel.pipeline().replace(ctx.name(), PACKET_DECODER, PacketDecoder(value))
                 channel.config().isAutoRead = true
             })
 
@@ -51,15 +54,15 @@ class PlayerConnectionImpl(
     override fun setEncryptionKey(key: Key) {
         encryptionEnabled = true
 
-        val decipher = Cipher.getInstance("AES/CFB8/NoPadding")
+        val decipher = Cipher.getInstance(ENCRYPTION_CIPHER)
         decipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(key.encoded))
 
-        val encipher = Cipher.getInstance("AES/CFB8/NoPadding")
+        val encipher = Cipher.getInstance(ENCRYPTION_CIPHER)
         encipher.init(Cipher.ENCRYPT_MODE, key, IvParameterSpec(key.encoded))
 
         channel.pipeline()
-            .addBefore("length_encoder", "encrypt", PacketEncryptor(encipher))
-            .addBefore("length_decoder", "decrypt", PacketDecryptor(decipher))
+            .addBefore(LENGTH_ENCODER, CIPHER_ENCODER, PacketEncryptor(encipher))
+            .addBefore(LENGTH_DECODER, CIPHER_DECODER, PacketDecryptor(decipher))
     }
 
     private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)

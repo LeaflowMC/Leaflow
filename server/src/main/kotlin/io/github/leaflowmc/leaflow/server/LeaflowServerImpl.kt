@@ -1,6 +1,12 @@
 package io.github.leaflowmc.leaflow.server
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
+import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.SERVER_KEY_PAIR_ALGORITHM
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_DECODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PLAYER_CONNECTION
 import io.github.leaflowmc.leaflow.server.netty.PacketDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketEncoder
 import io.github.leaflowmc.leaflow.server.netty.PacketSizeDecoder
@@ -32,7 +38,7 @@ class LeaflowServerImpl(
     private val bossGroup: MultiThreadIoEventLoopGroup
     private val workerGroup: MultiThreadIoEventLoopGroup
 
-    override val keyPair: KeyPair = KeyPairGenerator.getInstance("RSA").generateKeyPair()
+    override val keyPair: KeyPair = KeyPairGenerator.getInstance(SERVER_KEY_PAIR_ALGORITHM).generateKeyPair()
 
     init {
         val nioFactory = NioIoHandler.newFactory()
@@ -51,14 +57,14 @@ class LeaflowServerImpl(
                             ProtocolStage.HANDSHAKE)
 
                         ch.pipeline()
-                            .addLast("length_encoder", PacketSizeEncoder())
-                            .addLast("length_decoder", PacketSizeDecoder())
+                            .addLast(LENGTH_ENCODER, PacketSizeEncoder())
+                            .addLast(LENGTH_DECODER, PacketSizeDecoder())
 
-                            .addLast("encoder",
+                            .addLast(PACKET_ENCODER,
                                 PacketEncoder())
-                            .addLast("decoder",
+                            .addLast(PACKET_DECODER,
                                 PacketDecoder(ProtocolStage.HANDSHAKE))
-                            .addLast("connection", playerConnection)
+                            .addLast(PLAYER_CONNECTION, playerConnection)
                     }
                 })
 

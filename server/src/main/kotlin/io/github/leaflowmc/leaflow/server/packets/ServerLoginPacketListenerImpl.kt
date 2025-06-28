@@ -4,6 +4,8 @@ import io.github.leaflowmc.leaflow.common.GameProfile
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.login.*
+import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.ENCRYPTION_ALGORITHM
+import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.SERVER_KEY_PAIR_ALGORITHM
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.github.leaflowmc.leaflow.server.utils.AuthUtils
 import javax.crypto.Cipher
@@ -35,13 +37,13 @@ class ServerLoginPacketListenerImpl(
     }
 
     override fun encryptionResponse(packet: ServerboundEncryptionResponsePacket) {
-        val cipher = Cipher.getInstance("RSA")
+        val cipher = Cipher.getInstance(SERVER_KEY_PAIR_ALGORITHM)
         cipher.init(Cipher.DECRYPT_MODE, playerConnection.server.keyPair.private)
 
         val verifyToken = cipher.doFinal(packet.verifyToken)
         check(this.verifyToken.contentEquals(verifyToken)) { "Couldn't verify the verification token" }
 
-        val secret = SecretKeySpec(cipher.doFinal(packet.sharedSecret), "AES")
+        val secret = SecretKeySpec(cipher.doFinal(packet.sharedSecret), ENCRYPTION_ALGORITHM)
         playerConnection.setEncryptionKey(secret)
 
         val name = checkNotNull(requestedName) {
