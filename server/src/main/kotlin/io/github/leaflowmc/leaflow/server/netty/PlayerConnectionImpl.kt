@@ -31,25 +31,13 @@ class PlayerConnectionImpl(
     }
 
     override var protocol: ProtocolStage = initial
-        set(value) {
-            packetListener = server.factory.createServerPacketListenerFor(value, this)
-
-            val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
-                channel.pipeline().replace(ctx.name(), PACKET_DECODER, PacketDecoder(value))
-                channel.config().isAutoRead = true
-            })
-
-            try {
-                future.syncUninterruptibly()
-            } catch (e: Throwable) {
-                LOGGER.error("Exception during protocol change", e)
-                throw e
-            }
-            field = value
-        }
+        private set
+    private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
 
     override var encryptionEnabled: Boolean = false
         private set
+
+    private lateinit var channel: Channel
 
     override fun setEncryptionKey(key: Key) {
         encryptionEnabled = true
@@ -65,9 +53,22 @@ class PlayerConnectionImpl(
             .addBefore(LENGTH_DECODER, CIPHER_DECODER, PacketDecryptor(decipher))
     }
 
-    private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
+    override fun setProtocol(stage: ProtocolStage, listener: ServerPacketListener) {
+        val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
+            channel.pipeline().replace(ctx.name(), PACKET_DECODER, PacketDecoder(stage))
+            channel.config().isAutoRead = true
+        })
 
-    private lateinit var channel: Channel
+        try {
+            future.syncUninterruptibly()
+        } catch (e: Throwable) {
+            LOGGER.error("Exception during protocol change", e)
+            throw e
+        }
+
+        packetListener = listener
+        protocol = stage
+    }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
         super.channelActive(ctx)
