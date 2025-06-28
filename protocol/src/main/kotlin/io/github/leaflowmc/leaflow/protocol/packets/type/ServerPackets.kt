@@ -10,12 +10,17 @@ import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPlayPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ServerPacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundConfigurationKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundAcknowledgeFinishConfigurationPacket
+import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundClientInfoPacket
+import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundKnownPacksPacket
 import io.github.leaflowmc.leaflow.protocol.packets.handshake.ServerboundHandshakePacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundEncryptionResponsePacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginAcknowledgedPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginStartPacket
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPlayPingRequestPacket
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundStatusPingRequestPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundConfigurationPongPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPlayPingPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundStatusPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.ServerboundStatusRequestPacket
 
 object ServerHandshakePackets : ProtocolInfo<ServerHandshakePacketListener, ServerPacket<ServerHandshakePacketListener, *>>() {
@@ -24,7 +29,7 @@ object ServerHandshakePackets : ProtocolInfo<ServerHandshakePacketListener, Serv
 
 object ServerStatusPackets : ProtocolInfo<ServerStatusPacketListener, ServerPacket<ServerStatusPacketListener, *>>() {
     val STATUS_REQUEST = addPacket(ServerboundStatusRequestPacket.serializer())
-    val PING_REQUEST = addPacket(ServerboundStatusPingRequestPacket.serializer())
+    val PING_REQUEST = addPacket(ServerboundStatusPingPacket.serializer())
 }
 
 object ServerLoginPackets : ProtocolInfo<ServerLoginPacketListener, ServerPacket<ServerLoginPacketListener, *>>() {
@@ -36,14 +41,14 @@ object ServerLoginPackets : ProtocolInfo<ServerLoginPacketListener, ServerPacket
 }
 
 object ServerConfigurationPackets : ProtocolInfo<ServerConfigurationPacketListener, ServerPacket<ServerConfigurationPacketListener, *>>() {
-    val CLIENT_INFORMATION = skipPacket()
+    val CLIENT_INFORMATION = addPacket(ServerboundClientInfoPacket.serializer())
     val COOKIE_RESPONSE = skipPacket()
-    val ACKNOWLEDGE_FINISH_CONFIGURATION = skipPacket()
-    val KEEP_ALIVE = skipPacket()
-    val PONG = skipPacket()
     val PLUGIN_MESSAGE = skipPacket()
+    val ACKNOWLEDGE_FINISH_CONFIGURATION = addPacket(ServerboundAcknowledgeFinishConfigurationPacket.serializer())
+    val KEEP_ALIVE = addPacket(ServerboundConfigurationKeepAlivePacket.serializer())
+    val PONG = addPacket(ServerboundConfigurationPongPacket.serializer())
     val RESOURCE_PACK_RESPONSE = skipPacket()
-    val KNOWN_PACKS = skipPacket()
+    val KNOWN_PACKS = addPacket(ServerboundKnownPacksPacket.serializer())
     val CUSTOM_CLICK_ACTION = skipPacket()
 }
 
@@ -84,7 +89,7 @@ object ServerPlayPackets : ProtocolInfo<ServerPlayPacketListener, ServerPacket<S
     val PADDLE_BOAT = skipPacket()
     val PICK_ITEM_FROM_BLOCK = skipPacket()
     val PICK_ITEM_FROM_ENTITY = skipPacket()
-    val PING_REQUEST = addPacket(ServerboundPlayPingRequestPacket.serializer())
+    val PING_REQUEST = addPacket(ServerboundPlayPingPacket.serializer())
     val PLACE_RECIPE = skipPacket()
     val PLAYER_ABILITIES = skipPacket()
     val PLAYER_ACTION = skipPacket()
@@ -121,7 +126,7 @@ fun getServerProtocolFor(stage: ProtocolStage): ProtocolInfo<ServerPacketListene
         ProtocolStage.HANDSHAKE -> ServerHandshakePackets
         ProtocolStage.STATUS -> ServerStatusPackets
         ProtocolStage.LOGIN -> ServerLoginPackets
-        ProtocolStage.CONFIGURATION -> TODO()
+        ProtocolStage.CONFIGURATION -> ServerConfigurationPackets
         ProtocolStage.PLAY -> ServerPlayPackets
     } as ProtocolInfo<ServerPacketListener, ServerPacket<ServerPacketListener, *>>
 }

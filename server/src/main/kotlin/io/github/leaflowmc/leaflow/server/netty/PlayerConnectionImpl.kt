@@ -66,6 +66,7 @@ class PlayerConnectionImpl(
             throw e
         }
 
+        packetListener.dispose()
         packetListener = listener
         protocol = stage
     }
@@ -90,6 +91,18 @@ class PlayerConnectionImpl(
             LOGGER.error("error while handling packet \"${msg::class.simpleName}\"", e)
             throw e
         }
+    }
+
+    override fun channelInactive(ctx: ChannelHandlerContext) {
+        packetListener.dispose()
+
+        super.channelInactive(ctx)
+    }
+
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
+        LOGGER.error("Caught exception", cause)
+        // TODO: disconnect
+        ctx.close()
     }
 
     override fun sendPacket(packet: ClientPacket<*, *>) {

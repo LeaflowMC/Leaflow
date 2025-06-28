@@ -7,14 +7,22 @@ import io.github.leaflowmc.leaflow.protocol.listener.client.ClientLoginPacketLis
 import io.github.leaflowmc.leaflow.protocol.listener.client.ClientPlayPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.client.ClientStatusPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundConfigurationCustomReportDetails
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundConfigurationDisconnectPacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundConfigurationKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundFinishConfigurationPacket
+import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundKnownPacksPacket
+import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundResetChatPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundEncryptionRequestPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginSuccessPacket
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundStatusPongResponsePacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundConfigurationPingPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPlayPingPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundStatusPongPacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.ClientboundStatusResponsePacket
 
 object ClientStatusPackets : ProtocolInfo<ClientStatusPacketListener, ClientPacket<ClientStatusPacketListener, *>>() {
     val STATUS_RESPONSE = addPacket(ClientboundStatusResponsePacket.serializer())
-    val PONG_RESPONSE = addPacket(ClientboundStatusPongResponsePacket.serializer())
+    val PONG_RESPONSE = addPacket(ClientboundStatusPongPacket.serializer())
 }
 
 object ClientLoginPackets : ProtocolInfo<ClientLoginPacketListener, ClientPacket<ClientLoginPacketListener, *>>() {
@@ -29,11 +37,11 @@ object ClientLoginPackets : ProtocolInfo<ClientLoginPacketListener, ClientPacket
 object ClientConfigurationPackets : ProtocolInfo<ClientConfigurationPacketListener, ClientPacket<ClientConfigurationPacketListener, *>>() {
     val COOKIE_REQUEST = skipPacket()
     val PLUGIN_MESSAGE = skipPacket()
-    val DISCONNECT = skipPacket()
-    val FINISH_CONFIGURATION = skipPacket()
-    val KEEP_ALIVE = skipPacket()
-    val PING = skipPacket()
-    val RESET_CHAT = skipPacket()
+    val DISCONNECT = addPacket(ClientboundConfigurationDisconnectPacket.serializer())
+    val FINISH_CONFIGURATION = addPacket(ClientboundFinishConfigurationPacket.serializer())
+    val KEEP_ALIVE = addPacket(ClientboundConfigurationKeepAlivePacket.serializer())
+    val PING = addPacket(ClientboundConfigurationPingPacket.serializer())
+    val RESET_CHAT = addPacket(ClientboundResetChatPacket.serializer())
     val REGISTRY_DATA = skipPacket()
     val REMOVE_RESOURCE_PACK = skipPacket()
     val ADD_RESOURCE_PACK = skipPacket()
@@ -41,8 +49,8 @@ object ClientConfigurationPackets : ProtocolInfo<ClientConfigurationPacketListen
     val TRANSFER = skipPacket()
     val FEATURE_FLAGS = skipPacket()
     val UPDATE_TAGS = skipPacket()
-    val KNOWN_PACKS = skipPacket()
-    val CUSTOM_REPORT_DETAILS = skipPacket()
+    val KNOWN_PACKS = addPacket(ClientboundKnownPacksPacket.serializer())
+    val CUSTOM_REPORT_DETAILS = addPacket(ClientboundConfigurationCustomReportDetails.serializer())
     val SERVER_LINKS = skipPacket()
     val CLEAR_DIALOG = skipPacket()
     val SHOW_DIALOG = skipPacket()
@@ -103,7 +111,7 @@ object ClientPlayPackets : ProtocolInfo<ClientPlayPacketListener, ClientPacket<C
     val OPEN_BOOK = skipPacket()
     val OPEN_SCREEN = skipPacket()
     val OPEN_SIGN_EDITOR = skipPacket()
-    val PING = skipPacket()
+    val PING = addPacket(ClientboundPlayPingPacket.serializer())
     val PONG = skipPacket()
     val PLACE_GHOST_RECIPE = skipPacket()
     val PLAYER_ABILITIES = skipPacket()
