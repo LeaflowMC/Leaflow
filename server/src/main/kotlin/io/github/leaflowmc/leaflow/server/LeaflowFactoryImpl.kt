@@ -5,9 +5,11 @@ import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacke
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.leaflow.server.netty.PlayerConnectionImpl
+import io.github.leaflowmc.leaflow.server.packets.ServerConfigurationPacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerHandshakePacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerLoginPacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerStatusPacketListenerImpl
+import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerConfigurationPacketListener
 import io.github.leaflowmc.leaflow.server.player.Player
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.github.leaflowmc.leaflow.server.player.PlayerImpl
@@ -33,5 +35,9 @@ open class LeaflowFactoryImpl protected constructor() : LeaflowFactory {
 
     override fun createServerLoginPacketListener(connection: PlayerConnection): ServerLoginPacketListener {
         return ServerLoginPacketListenerImpl(connection)
+    }
+
+    override fun createServerConfigurationPacketListener(connection: PlayerConnection): LeaflowServerConfigurationPacketListener {
+        return ServerConfigurationPacketListenerImpl(connection)
     }
 }
