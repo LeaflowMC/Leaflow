@@ -6,6 +6,8 @@ import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.readPrefixedString
 import io.github.leaflowmc.leaflow.common.utils.readVarInt
 import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
+import io.github.leaflowmc.leaflow.serialization.annotations.protocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufInputStream
@@ -36,9 +38,15 @@ abstract class AbstractByteBufDecoder : AbstractDecoder() {
     final override fun decodeDouble(): Double = buffer.readDouble()
     final override fun decodeChar(): Char = buffer.readChar()
     final override fun decodeString(): String = buffer.readPrefixedString()
-    final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = buffer.readVarInt()
     final override fun decodeNotNullMark(): Boolean = decodeBoolean()
     final override fun decodeCollectionSize(descriptor: SerialDescriptor): Int = decodeVarInt()
+
+    final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
+        return when(enumDescriptor.protocolEnumKind()) {
+            ProtocolEnumKind.Kind.UNSIGNED_BYTE -> buffer.readByte().toUByte().toInt()
+            ProtocolEnumKind.Kind.VAR_INT -> buffer.readVarInt()
+        }
+    }
 
     fun decodeVarInt() = buffer.readVarInt()
 
