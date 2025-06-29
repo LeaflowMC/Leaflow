@@ -6,8 +6,10 @@ import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundKeepAliveP
 import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAlivePacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPongPacket
+import io.github.leaflowmc.leaflow.server.constants.TextConstants
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
+import io.github.leaflowmc.leaflow.text.component.TranslatedTextComponent
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import org.apache.logging.log4j.LogManager
@@ -58,8 +60,9 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
                 this.lastKeepAlive = now
                 this.keepAliveAnswered = false
             } else {
-                LOGGER.warn("ALARM, CLIENT DIDN'T RESPOND TO KEEP ALIVE")
-                // TODO: disconnect
+                playerConnection.disconnect(
+                    TranslatedTextComponent(TextConstants.DISCONNECT_TIMED_OUT)
+                )
             }
         }
     }
@@ -68,8 +71,9 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
         if (!this.keepAliveAnswered && this.lastKeepAlive == packet.id) {
             this.keepAliveAnswered = true
         } else {
-            LOGGER.warn("received unexpected or invalid keep alive")
-            // TODO disconnect
+            playerConnection.disconnect(
+                TranslatedTextComponent(TextConstants.DISCONNECT_TIMED_OUT)
+            )
         }
     }
 

@@ -7,6 +7,8 @@ import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.protocol.packets.Packet
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundDisconnectPacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginDisconnectPacket
 import io.github.leaflowmc.leaflow.protocol.packets.type.getClientProtocolFor
 import io.github.leaflowmc.leaflow.protocol.packets.type.getServerProtocolFor
 import io.github.leaflowmc.leaflow.server.LeaflowServer
@@ -17,10 +19,15 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.TextConstants
+import io.github.leaflowmc.leaflow.server.constants.TextConstants.DISCONNECT_INVALID_PACKET
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
+import io.github.leaflowmc.leaflow.text.component.PlainTextComponent
+import io.github.leaflowmc.leaflow.text.component.TextComponent
+import io.github.leaflowmc.leaflow.text.component.TranslatedTextComponent
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
@@ -60,6 +67,21 @@ class PlayerConnectionImpl(
 
     private fun tick() {
         (packetListener as? Tickable)?.tick()
+    }
+
+    override fun disconnect(reason: TextComponent) {
+        val packet = when (protocol) {
+            ProtocolStage.LOGIN -> ClientboundLoginDisconnectPacket(reason)
+
+            ProtocolStage.PLAY,
+            ProtocolStage.CONFIGURATION -> ClientboundDisconnectPacket(reason)
+
+            else -> null
+        }
+
+        packet?.let(::sendPacket)
+
+        channel.close()
     }
 
     override fun sendPing(): Deferred<Duration>? {
@@ -130,11 +152,7 @@ class PlayerConnectionImpl(
                 "The listener \"${packetListener::class.simpleName}\" can't handle the packet \"${msg::class.simpleName}\"",
                 e
             )
-            // TODO disconnect packet
-            ctx.close()
-        } catch (e: Throwable) {
-            LOGGER.error("error while handling packet \"${msg::class.simpleName}\"", e)
-            throw e
+            disconnect(TranslatedTextComponent(DISCONNECT_INVALID_PACKET))
         }
     }
 
@@ -147,12 +165,11 @@ class PlayerConnectionImpl(
 
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
         LOGGER.error("Caught exception", cause)
-        // TODO: disconnect
-        ctx.close()
+
+        disconnect(PlainTextComponent("Internal exception: ${cause.message}"))
     }
 
     override fun sendPacket(packet: ClientPacket<*>) {
         channel.writeAndFlush(packet)
     }
-
 }
