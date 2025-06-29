@@ -26,17 +26,15 @@ data class KeybindTextComponent(
     override val hoverEvent: HoverEvent? = null
 ) : TextComponent() {
     companion object {
-        inline fun builder(block: Builder.() -> Unit): KeybindTextComponent {
-            return Builder().apply(block).build()
+        inline fun builder(keybind: String, block: Builder.() -> Unit = {}): KeybindTextComponent {
+            return Builder(keybind).apply(block).build()
         }
     }
 
-    class Builder : TextComponent.Builder() {
-        var keybind: String? = null
-
+    class Builder(val keybind: String) : TextComponent.Builder() {
         override fun build(): KeybindTextComponent {
             return KeybindTextComponent(
-                requireNotNull(keybind) { "keybind must be set" },
+                keybind,
                 if (extra.isEmpty()) null else extra.toList(),
                 color,
                 font,

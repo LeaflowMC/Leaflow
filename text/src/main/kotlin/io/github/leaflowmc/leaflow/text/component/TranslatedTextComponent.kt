@@ -28,19 +28,18 @@ class TranslatedTextComponent(
     override val hoverEvent: HoverEvent? = null
 ) : TextComponent() {
     companion object {
-        inline fun builder(block: Builder.() -> Unit): TranslatedTextComponent {
-            return Builder().apply(block).build()
+        inline fun builder(translate: String, block: Builder.() -> Unit = {}): TranslatedTextComponent {
+            return Builder(translate).apply(block).build()
         }
     }
 
-    class Builder : TextComponent.Builder() {
-        var translate: String? = null
+    class Builder(val translate: String) : TextComponent.Builder() {
         var fallback: String? = null
         val with = mutableListOf<TextComponent>()
 
         override fun build(): TranslatedTextComponent {
             return TranslatedTextComponent(
-                requireNotNull(translate) { "translate must be set" },
+                translate,
                 fallback,
                 if (with.isEmpty()) null else with.toList(),
                 if (extra.isEmpty()) null else extra.toList(),

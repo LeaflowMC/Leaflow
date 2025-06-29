@@ -26,17 +26,15 @@ class PlainTextComponent(
     override val hoverEvent: HoverEvent? = null
 ) : TextComponent() {
     companion object {
-        inline fun builder(block: Builder.() -> Unit): PlainTextComponent {
-            return Builder().apply(block).build()
+        inline fun builder(text: String, block: Builder.() -> Unit = {}): PlainTextComponent {
+            return Builder(text).apply(block).build()
         }
     }
 
-    class Builder : TextComponent.Builder() {
-        var text: String? = null
-
+    class Builder(val text: String) : TextComponent.Builder() {
         override fun build(): PlainTextComponent {
             return PlainTextComponent(
-                requireNotNull(text) { "text must be set" },
+                text,
                 if (extra.isEmpty()) null else extra.toList(),
                 color,
                 font,
