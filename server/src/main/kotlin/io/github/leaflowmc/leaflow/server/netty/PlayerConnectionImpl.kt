@@ -46,9 +46,9 @@ class PlayerConnectionImpl(
         private val LOGGER = LogManager.getLogger()
     }
 
-    override var protocol: ProtocolStage = initial
-        private set
-    private var packetListener = server.factory.createServerPacketListenerFor(protocol, this)
+    private var outboundProtocol: ProtocolStage? = null
+
+    private var packetListener = server.factory.createServerPacketListenerFor(initial, this)
 
     override var encryptionEnabled: Boolean = false
         private set
@@ -70,7 +70,7 @@ class PlayerConnectionImpl(
     }
 
     override fun disconnect(reason: TextComponent) {
-        val packet = when (protocol) {
+        val packet = when (outboundProtocol) {
             ProtocolStage.LOGIN -> ClientboundLoginDisconnectPacket(reason)
 
             ProtocolStage.PLAY,
@@ -119,9 +119,10 @@ class PlayerConnectionImpl(
             throw e
         }
 
+        outboundProtocol = stage
     }
 
-    override fun setInboundProtocol(stage: ProtocolStage, listener: ServerPacketListener) {
+    override fun setInboundProtocol(stage: ProtocolStage) {
         val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
             channel.pipeline().replace(ctx.name(), PACKET_DECODER, PacketDecoder(getServerProtocolFor(stage)))
             channel.config().isAutoRead = true
@@ -135,7 +136,7 @@ class PlayerConnectionImpl(
         }
 
         (packetListener as? Disposable)?.dispose()
-        packetListener = listener
+        packetListener = server.factory.createServerPacketListenerFor(stage, this)
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
