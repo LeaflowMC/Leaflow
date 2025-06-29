@@ -4,6 +4,7 @@ import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.server.LeaflowServer
+import io.github.leaflowmc.leaflow.text.component.TextComponent
 import io.netty.channel.ChannelInboundHandler
 import kotlinx.coroutines.Deferred
 import java.security.Key
@@ -17,6 +18,11 @@ interface PlayerConnection : ChannelInboundHandler {
     val server: LeaflowServer
 
     val encryptionEnabled: Boolean
+
+    /**
+     * Sends disconnect packet and closes the channel
+     */
+    fun disconnect(reason: TextComponent)
 
     /**
      * Sends a ping, if current protocol stage has a clientbound ping packet,

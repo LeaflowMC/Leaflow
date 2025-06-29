@@ -10,6 +10,7 @@ import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundFin
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundKnownPacksPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundResetChatPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundEncryptionRequestPacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginDisconnectPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginSuccessPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPongPacket
@@ -37,7 +38,7 @@ val ClientStatusPackets = createProtocolInfo(ProtocolStage.STATUS) {
 }
 
 val ClientLoginPackets = createProtocolInfo(ProtocolStage.LOGIN) {
-    skipPacket("DISCONNECT")
+    addPacket<ClientboundLoginDisconnectPacket>()
     addPacket<ClientboundEncryptionRequestPacket>()
     addPacket<ClientboundLoginSuccessPacket>()
     skipPacket("SET_COMPRESSION")
