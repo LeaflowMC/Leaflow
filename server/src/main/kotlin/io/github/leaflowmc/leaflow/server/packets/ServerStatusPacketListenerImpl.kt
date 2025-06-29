@@ -26,7 +26,4 @@ class ServerStatusPacketListenerImpl(
             )
         )
     }
-
-    override fun dispose() {
-    }
 }

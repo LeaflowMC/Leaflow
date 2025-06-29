@@ -65,7 +65,4 @@ class ServerLoginPacketListenerImpl(
             ClientboundLoginSuccessPacket(profile)
         )
     }
-
-    override fun dispose() {
-    }
 }

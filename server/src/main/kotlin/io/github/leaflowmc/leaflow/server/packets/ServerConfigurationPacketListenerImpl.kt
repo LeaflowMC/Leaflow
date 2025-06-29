@@ -3,6 +3,7 @@ package io.github.leaflowmc.leaflow.server.packets
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerConfigurationPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundConfigurationKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundKeepAlivePacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundFinishConfigurationPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundAcknowledgeFinishConfigurationPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundClientInfoPacket
@@ -39,5 +40,9 @@ class ServerConfigurationPacketListenerImpl(
 
     override fun getPingPacket(timestamp: Int): ClientboundPingPacket<*, *> {
         return ClientboundConfigurationPingPacket(timestamp)
+    }
+
+    override fun getKeepAlivePacket(id: Long): ClientboundKeepAlivePacket<*, *> {
+        return ClientboundConfigurationKeepAlivePacket(id)
     }
 }
