@@ -11,10 +11,6 @@ import java.security.Key
 import kotlin.time.Duration
 
 interface PlayerConnection : ChannelInboundHandler {
-    /**
-     * Current protocol stage
-     */
-    val protocol: ProtocolStage
     val server: LeaflowServer
 
     val encryptionEnabled: Boolean
@@ -33,11 +29,6 @@ interface PlayerConnection : ChannelInboundHandler {
     fun sendPing(): Deferred<Duration>?
 
     /**
-     * Setup inbound protocol for the [ProtocolStage]
-     */
-    fun setInboundProtocol(stage: ProtocolStage, listener: ServerPacketListener)
-
-    /**
      * Setup outbound protocol for the [ProtocolStage]
      */
     fun setOutboundProtocol(stage: ProtocolStage)
@@ -45,10 +36,7 @@ interface PlayerConnection : ChannelInboundHandler {
     /**
      * Setup inbound protocol for the [ProtocolStage] with a default packet listener
      */
-    fun setInboundProtocol(stage: ProtocolStage) {
-        val listener = server.factory.createServerPacketListenerFor(stage, this)
-        setInboundProtocol(stage, listener)
-    }
+    fun setInboundProtocol(stage: ProtocolStage)
 
     /**
      * Sets up the handlers for encryption with the specified key
