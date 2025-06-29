@@ -13,6 +13,18 @@ import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginAcknow
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginStartPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPongPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundAcknowledgeConfigurationPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundClientTickEndPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundConfirmTeleportationPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundMoveVehiclePacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundPaddleBoatPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundPlayerCommandPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundPlayerInputPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundPlayerLoadedPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundSetMovementFlagsPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundSetPositionAndRotationPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundSetPositionPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.serverbound.ServerboundSetRotationPacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.ServerboundStatusRequestPacket
 
 val ServerHandshakePackets = createProtocolInfo(ProtocolStage.HANDSHAKE) {
@@ -45,7 +57,7 @@ val ServerConfigurationPackets = createProtocolInfo(ProtocolStage.CONFIGURATION)
 }
 
 val ServerPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
-    skipPacket("CONFIRM_TELEPORTATION")
+    addPacket<ServerboundConfirmTeleportationPacket>()
     skipPacket("QUERY_BLOCK_ENTITY_TAG")
     skipPacket("BUNDLE_ITEM_SELECTED")
     skipPacket("CHANGE_DIFFICULTY")
@@ -56,10 +68,10 @@ val ServerPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("PLAYER_SESSION")
     skipPacket("CHUNK_BATCH_RECEIVED")
     skipPacket("CLIENT_STATUS")
-    skipPacket("CLIENT_TICK_END")
+    addPacket<ServerboundClientTickEndPacket>()
     skipPacket("CLIENT_INFORMATION")
     skipPacket("COMMAND_SUGGESTIONS_REQUEST")
-    skipPacket("ACKNOWLEDGE_CONFIGURATION")
+    addPacket<ServerboundAcknowledgeConfigurationPacket>()
     skipPacket("CLICK_CONTAINER_BUTTON")
     skipPacket("CLICK_CONTAINER")
     skipPacket("CLOSE_CONTAINER")
@@ -73,22 +85,22 @@ val ServerPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("JIGSAW_GENERATE")
     addPacket<ServerboundKeepAlivePacket>()
     skipPacket("LOCK_DIFFICULTY")
-    skipPacket("SET_PLAYER_POSITION")
-    skipPacket("SET_PLAYER_POSITION_AND_ROTATION")
-    skipPacket("SET_PLAYER_ROTATION")
-    skipPacket("SET_PLAYER_MOVEMENT_FLAGS")
-    skipPacket("MOVE_VEHICLE")
-    skipPacket("PADDLE_BOAT")
+    addPacket<ServerboundSetPositionPacket>()
+    addPacket<ServerboundSetPositionAndRotationPacket>()
+    addPacket<ServerboundSetRotationPacket>()
+    addPacket<ServerboundSetMovementFlagsPacket>()
+    addPacket<ServerboundMoveVehiclePacket>()
+    addPacket<ServerboundPaddleBoatPacket>()
     skipPacket("PICK_ITEM_FROM_BLOCK")
     skipPacket("PICK_ITEM_FROM_ENTITY")
     addPacket<ServerboundPingPacket>()
     skipPacket("PLACE_RECIPE")
     skipPacket("PLAYER_ABILITIES")
     skipPacket("PLAYER_ACTION")
-    skipPacket("PLAYER_COMMAND")
-    skipPacket("PLAYER_INPUT")
-    skipPacket("PLAYER_LOADED")
-    skipPacket("PONG")
+    addPacket<ServerboundPlayerCommandPacket>()
+    addPacket<ServerboundPlayerInputPacket>()
+    addPacket<ServerboundPlayerLoadedPacket>()
+    addPacket<ServerboundPongPacket>()
     skipPacket("CHANGE_RECIPE_BOOK_SETTINGS")
     skipPacket("SET_SEEN_RECIPE")
     skipPacket("RENAME_ITEM")

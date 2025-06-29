@@ -13,6 +13,19 @@ import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundEncryptionR
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginSuccessPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPongPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundAbilitiesPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundChangeDifficultyPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundGameEventPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundLoginPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundServerDataPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundSetDefaultSpawnPositionPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundSetHeldItemPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundSetTickingStatePacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundSetTitleTextPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundStartConfigurationPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundStepTickPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundTeleportPacket
+import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundUpdateTimePacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.ClientboundStatusResponsePacket
 
 val ClientHandshakePackets = createProtocolInfo(ProtocolStage.HANDSHAKE) {
@@ -65,7 +78,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("BLOCK_ACTION")
     skipPacket("BLOCK_UPDATE")
     skipPacket("BOSS_BAR")
-    skipPacket("CHANGE_DIFFICULTY")
+    addPacket<ClientboundChangeDifficultyPacket>()
     skipPacket("CHUNK_BATCH_FINISHED")
     skipPacket("CHUNK_BATCH_START")
     skipPacket("CHUNK_BIOMES")
@@ -83,22 +96,22 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("DAMAGE_EVENT")
     skipPacket("DEBUG_SAMPLE")
     skipPacket("DELETE_MESSAGE")
-    skipPacket("DISCONNECT")
+    addPacket<ClientboundDisconnectPacket>()
     skipPacket("DISGUISED_CHAT_MESSAGE")
     skipPacket("ENTITY_EVENT")
     skipPacket("TELEPORT_ENTITY")
     skipPacket("EXPLOSION")
     skipPacket("UNLOAD_CHUNK")
-    skipPacket("GAME_EVENT")
+    addPacket<ClientboundGameEventPacket>()
     skipPacket("OPEN_HORSE_SCREEN")
     skipPacket("HURT_ANIMATION")
     skipPacket("INITIALIZE_WORLD_BORDER")
-    skipPacket("KEEP_ALIVE")
+    addPacket<ClientboundKeepAlivePacket>()
     skipPacket("CHUNK_DATA_AND_UPDATE_LIGHT")
     skipPacket("WORLD_EVENT")
     skipPacket("PARTICLE")
     skipPacket("UPDATE_LIGHT")
-    skipPacket("LOGIN")
+    addPacket<ClientboundLoginPacket>()
     skipPacket("MAP_DATA")
     skipPacket("MERCHANT_OFFERS")
     skipPacket("UPDATE_ENTITY_POSITION")
@@ -110,9 +123,9 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("OPEN_SCREEN")
     skipPacket("OPEN_SIGN_EDITOR")
     addPacket<ClientboundPingPacket>()
-    skipPacket("PONG")
+    addPacket<ClientboundPongPacket>()
     skipPacket("PLACE_GHOST_RECIPE")
-    skipPacket("PLAYER_ABILITIES")
+    addPacket<ClientboundAbilitiesPacket>()
     skipPacket("PLAYER_CHAT_MESSAGE")
     skipPacket("END_COMBAT")
     skipPacket("ENTER_COMBAT")
@@ -120,7 +133,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("PLAYER_INFO_REMOVE")
     skipPacket("PLAYER_INFO_UPDATE")
     skipPacket("LOOK_AT")
-    skipPacket("SYNCHRONIZE_PLAYER_POSITION")
+    addPacket<ClientboundTeleportPacket>()
     skipPacket("PLAYER_ROTATION")
     skipPacket("RECIPE_BOOK_ADD")
     skipPacket("RECIPE_BOOK_REMOVE")
@@ -134,7 +147,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("SET_HEAD_ROTATION")
     skipPacket("UPDATE_SECTION_BLOCKS")
     skipPacket("SELECT_ADVANCEMENTS_TAB")
-    skipPacket("SERVER_DATA")
+    addPacket<ClientboundServerDataPacket>()
     skipPacket("SET_ACTION_BAR_TEXT")
     skipPacket("SET_BORDER_CENTER")
     skipPacket("SET_BORDER_LERP_SIZE")
@@ -145,7 +158,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("SET_CENTER_CHUNK")
     skipPacket("SET_RENDER_DISTANCE")
     skipPacket("SET_CURSOR_ITEM")
-    skipPacket("SET_DEFAULT_SPAWN_POSITION")
+    addPacket<ClientboundSetDefaultSpawnPositionPacket>()
     skipPacket("DISPLAY_OBJECTIVE")
     skipPacket("SET_ENTITY_METADATA")
     skipPacket("LINK_ENTITIES")
@@ -153,7 +166,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("SET_EQUIPMENT")
     skipPacket("SET_EXPERIENCE")
     skipPacket("SET_HEALTH")
-    skipPacket("SET_HELD_ITEM")
+    addPacket<ClientboundSetHeldItemPacket>()
     skipPacket("UPDATE_OBJECTIVES")
     skipPacket("SET_PASSENGERS")
     skipPacket("SET_PLAYER_INVENTORY_SLOT")
@@ -161,12 +174,12 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("UPDATE_SCORE")
     skipPacket("SET_SIMULATION_DISTANCE")
     skipPacket("SET_SUBTITLE_TEXT")
-    skipPacket("UPDATE_TIME")
-    skipPacket("SET_TITLE_TEXT")
+    addPacket<ClientboundUpdateTimePacket>()
+    addPacket<ClientboundSetTitleTextPacket>()
     skipPacket("SET_TITLE_ANIMATION_TIMES")
     skipPacket("ENTITY_SOUND_EFFECT")
     skipPacket("SOUND_EFFECT")
-    skipPacket("START_CONFIGURATION")
+    addPacket<ClientboundStartConfigurationPacket>()
     skipPacket("STOP_SOUND")
     skipPacket("STORE_COOKIE")
     skipPacket("SYSTEM_CHAT_MESSAGE")
@@ -175,8 +188,8 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("PICKUP_ITEM")
     skipPacket("SYNCHRONIZE_VEHICLE_POSITION")
     skipPacket("TEST_INSTANCE_BLOCK_STATUS")
-    skipPacket("SET_TICKING_STATE")
-    skipPacket("STEP_TICK")
+    addPacket<ClientboundSetTickingStatePacket>()
+    addPacket<ClientboundStepTickPacket>()
     skipPacket("TRANSFER")
     skipPacket("UPDATE_ADVANCEMENTS")
     skipPacket("UPDATE_ATTRIBUTES")
@@ -184,7 +197,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("UPDATE_RECIPES")
     skipPacket("UPDATE_TAGS")
     skipPacket("PROJECTILE_POWER")
-    skipPacket("CUSTOM_REPORT_DETAILS")
+    addPacket<ClientboundCustomReportDetailsPacket>()
     skipPacket("SERVER_LINKS")
     skipPacket("WAYPOINT")
     skipPacket("CLEAR_DIALOG")
