@@ -6,6 +6,7 @@ import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketLis
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerStatusPacketListener
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerConfigurationPacketListener
+import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerPlayPacketListener
 import io.github.leaflowmc.leaflow.server.player.Player
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 
@@ -17,6 +18,7 @@ interface LeaflowFactory {
     fun createServerStatusPacketListener(connection: PlayerConnection): ServerStatusPacketListener
     fun createServerLoginPacketListener(connection: PlayerConnection): ServerLoginPacketListener
     fun createServerConfigurationPacketListener(connection: PlayerConnection): LeaflowServerConfigurationPacketListener
+    fun createServerPlayPacketListener(connection: PlayerConnection): LeaflowServerPlayPacketListener
 
     fun createServerPacketListenerFor(stage: ProtocolStage, connection: PlayerConnection): ServerPacketListener {
         return when (stage) {
@@ -24,7 +26,7 @@ interface LeaflowFactory {
             ProtocolStage.STATUS -> createServerStatusPacketListener(connection)
             ProtocolStage.LOGIN -> createServerLoginPacketListener(connection)
             ProtocolStage.CONFIGURATION -> createServerConfigurationPacketListener(connection)
-            ProtocolStage.PLAY -> TODO("play not implemented")
+            ProtocolStage.PLAY -> createServerPlayPacketListener(connection)
         }
     }
 }

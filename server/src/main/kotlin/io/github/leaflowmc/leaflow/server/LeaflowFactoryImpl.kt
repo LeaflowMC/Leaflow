@@ -8,8 +8,10 @@ import io.github.leaflowmc.leaflow.server.netty.PlayerConnectionImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerConfigurationPacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerHandshakePacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerLoginPacketListenerImpl
+import io.github.leaflowmc.leaflow.server.packets.ServerPlayPacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.ServerStatusPacketListenerImpl
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerConfigurationPacketListener
+import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerPlayPacketListener
 import io.github.leaflowmc.leaflow.server.player.Player
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.github.leaflowmc.leaflow.server.player.PlayerImpl
@@ -39,5 +41,9 @@ open class LeaflowFactoryImpl protected constructor() : LeaflowFactory {
 
     override fun createServerConfigurationPacketListener(connection: PlayerConnection): LeaflowServerConfigurationPacketListener {
         return ServerConfigurationPacketListenerImpl(connection)
+    }
+
+    override fun createServerPlayPacketListener(connection: PlayerConnection): LeaflowServerPlayPacketListener {
+        return ServerPlayPacketListenerImpl(connection)
     }
 }
