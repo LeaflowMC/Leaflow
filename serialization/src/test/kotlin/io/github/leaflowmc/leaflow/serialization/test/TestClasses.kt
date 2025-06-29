@@ -1,6 +1,7 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
 import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,3 +39,18 @@ data class VisionGlasses(
     @SerialName("vision_right")
     val visionRight: Int
 ) : Glasses
+
+enum class TestEnum {
+    ZERO,
+    ONE,
+    TWO;
+}
+
+@Serializable
+data class ClassWithEnum(
+    val number: Int,
+    @ProtocolEnumKind(ProtocolEnumKind.Kind.UNSIGNED_BYTE)
+    val byteEnum: TestEnum,
+    @ProtocolEnumKind(ProtocolEnumKind.Kind.VAR_INT)
+    val varIntEnum: TestEnum
+)

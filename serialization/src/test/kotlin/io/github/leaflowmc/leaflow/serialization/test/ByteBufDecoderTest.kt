@@ -1,12 +1,9 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
 import io.github.leaflowmc.leaflow.common.utils.VarInt
-import io.github.leaflowmc.leaflow.commonTest.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.decode
-import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
-import io.netty.buffer.ByteBufInputStream
 import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.Unpooled
 import net.kyori.adventure.nbt.BinaryTagIO
@@ -140,5 +137,25 @@ class ByteBufDecoderTest {
         }
 
         assertEquals(output, input.decode<Something>())
+    }
+
+    @Test
+    fun testEnum() {
+        val output = ClassWithEnum(
+            69,
+            TestEnum.ONE,
+            TestEnum.TWO
+        )
+
+        val input = Unpooled.buffer().apply {
+            writeInt(69)
+            writeByte(1)
+            writeVarInt(2)
+        }
+
+        assertEquals(
+            output,
+            input.decode<ClassWithEnum>()
+        )
     }
 }

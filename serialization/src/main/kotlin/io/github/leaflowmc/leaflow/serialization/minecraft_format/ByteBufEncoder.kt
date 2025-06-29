@@ -4,6 +4,8 @@ import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
 import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
+import io.github.leaflowmc.leaflow.serialization.annotations.protocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.nbt.encodeToNbt
 import io.netty.buffer.ByteBuf
 import io.netty.buffer.ByteBufOutputStream
@@ -61,7 +63,10 @@ class ByteBufEncoder(
     }
 
     override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
-        byteBuf.writeVarInt(index)
+        when (enumDescriptor.protocolEnumKind()) {
+            ProtocolEnumKind.Kind.UNSIGNED_BYTE -> byteBuf.writeByte(index)
+            ProtocolEnumKind.Kind.VAR_INT -> byteBuf.writeVarInt(index)
+        }
     }
 
     fun encodeVarInt(int: Int) = byteBuf.writeVarInt(int)
