@@ -29,14 +29,19 @@ interface PlayerConnection : ChannelInboundHandler {
     /**
      * Setup inbound protocol for the [ProtocolStage]
      */
-    fun setProtocol(stage: ProtocolStage, listener: ServerPacketListener)
+    fun setInboundProtocol(stage: ProtocolStage, listener: ServerPacketListener)
+
+    /**
+     * Setup outbound protocol for the [ProtocolStage]
+     */
+    fun setOutboundProtocol(stage: ProtocolStage)
 
     /**
      * Setup inbound protocol for the [ProtocolStage] with a default packet listener
      */
-    fun setProtocol(stage: ProtocolStage) {
+    fun setInboundProtocol(stage: ProtocolStage) {
         val listener = server.factory.createServerPacketListenerFor(stage, this)
-        setProtocol(stage, listener)
+        setInboundProtocol(stage, listener)
     }
 
     /**
@@ -49,5 +54,5 @@ interface PlayerConnection : ChannelInboundHandler {
     /**
      * Sends the packet to the player.
      */
-    fun sendPacket(packet: ClientPacket<*, *>)
+    fun sendPacket(packet: ClientPacket<*>)
 }

@@ -6,8 +6,8 @@ import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundKeepAliveP
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 
 interface ClientCommonPacketListener : ClientPacketListener {
-    fun keepAlive(packet: ClientboundKeepAlivePacket<*, *>)
-    fun ping(packet: ClientboundPingPacket<*, *>)
-    fun disconnect(packet: ClientboundDisconnectPacket<*, *>)
-    fun customReportDetails(packet: ClientboundCustomReportDetailsPacket<*, *>)
+    fun keepAlive(packet: ClientboundKeepAlivePacket)
+    fun ping(packet: ClientboundPingPacket)
+    fun disconnect(packet: ClientboundDisconnectPacket)
+    fun customReportDetails(packet: ClientboundCustomReportDetailsPacket)
 }

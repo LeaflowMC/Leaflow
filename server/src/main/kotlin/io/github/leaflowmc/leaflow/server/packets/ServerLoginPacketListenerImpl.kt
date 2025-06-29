@@ -57,12 +57,13 @@ class ServerLoginPacketListenerImpl(
     }
 
     override fun loginAcknowledged(packet: ServerboundLoginAcknowledgedPacket) {
-        playerConnection.setProtocol(ProtocolStage.CONFIGURATION)
+        playerConnection.setInboundProtocol(ProtocolStage.CONFIGURATION)
     }
 
     private fun finishLogin(profile: GameProfile) {
         playerConnection.sendPacket(
             ClientboundLoginSuccessPacket(profile)
         )
+        playerConnection.setOutboundProtocol(ProtocolStage.CONFIGURATION)
     }
 }

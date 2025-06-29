@@ -2,8 +2,6 @@ package io.github.leaflowmc.leaflow.protocol.packets.configuration
 
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerConfigurationPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ServerPacket
-import io.github.leaflowmc.leaflow.protocol.packets.type.PacketType
-import io.github.leaflowmc.leaflow.protocol.packets.type.ServerConfigurationPackets
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -24,10 +22,7 @@ class ServerboundClientInfoPacket(
     val enableTextFiltering: Boolean,
     val allowListing: Boolean,
     val particleStatus: ParticleStatus
-) : ServerPacket<ServerConfigurationPacketListener, ServerboundClientInfoPacket> {
-    override val type: PacketType<ServerboundClientInfoPacket>
-        get() = ServerConfigurationPackets.CLIENT_INFORMATION
-
+) : ServerPacket<ServerConfigurationPacketListener> {
     override fun handle(listener: ServerConfigurationPacketListener) {
         listener.clientInfo(this)
     }
