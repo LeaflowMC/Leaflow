@@ -5,7 +5,9 @@ import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.server.LeaflowServer
 import io.netty.channel.ChannelInboundHandler
+import kotlinx.coroutines.Deferred
 import java.security.Key
+import kotlin.time.Duration
 
 interface PlayerConnection : ChannelInboundHandler {
     /**
@@ -15,6 +17,14 @@ interface PlayerConnection : ChannelInboundHandler {
     val server: LeaflowServer
 
     val encryptionEnabled: Boolean
+
+    /**
+     * Sends a ping, if current protocol stage has a clientbound ping packet,
+     * and returns a deferred duration
+     *
+     * Otherwise, returns null
+     */
+    fun sendPing(): Deferred<Duration>?
 
     /**
      * Setup inbound protocol for the [ProtocolStage]

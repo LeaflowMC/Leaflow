@@ -13,14 +13,17 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
+import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import kotlinx.coroutines.Deferred
 import org.apache.logging.log4j.LogManager
 import java.security.Key
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
+import kotlin.time.Duration
 
 class PlayerConnectionImpl(
     override val server: LeaflowServer,
@@ -38,6 +41,15 @@ class PlayerConnectionImpl(
         private set
 
     private lateinit var channel: Channel
+
+    override fun sendPing(): Deferred<Duration>? {
+        val listener = packetListener
+
+        if (listener is LeaflowServerCommonPacketListener) {
+            return listener.sendPing()
+        }
+        return null
+    }
 
     override fun setEncryptionKey(key: Key) {
         encryptionEnabled = true
