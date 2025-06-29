@@ -22,6 +22,7 @@ abstract class NbtEncoder : AbstractEncoder() {
     abstract fun encodeNbt(value: BinaryTag)
 
     final override fun encodeValue(value: Any) = encodeNbt(value.toBinaryTag())
+    final override fun encodeNull() {}
 
     final override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
         return when (descriptor.kind) {
