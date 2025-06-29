@@ -1,5 +1,8 @@
 package io.github.leaflowmc.leaflow.server.netty
 
+import io.github.leaflowmc.leaflow.common.api.Disposable
+import io.github.leaflowmc.leaflow.common.api.Tickable
+import io.github.leaflowmc.leaflow.common.utils.ticks
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
@@ -18,7 +21,12 @@ import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import java.security.Key
 import javax.crypto.Cipher
@@ -41,6 +49,20 @@ class PlayerConnectionImpl(
         private set
 
     private lateinit var channel: Channel
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    init {
+        scope.launch {
+            while (true) {
+                delay(1.ticks)
+                tick()
+            }
+        }
+    }
+
+    private fun tick() {
+        (packetListener as? Tickable)?.tick()
+    }
 
     override fun sendPing(): Deferred<Duration>? {
         val listener = packetListener
@@ -78,7 +100,8 @@ class PlayerConnectionImpl(
             throw e
         }
 
-        packetListener.dispose()
+        (packetListener as? Disposable)?.dispose()
+
         packetListener = listener
         protocol = stage
     }
@@ -106,7 +129,8 @@ class PlayerConnectionImpl(
     }
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        packetListener.dispose()
+        scope.cancel("Channel is inactive")
+        (packetListener as? Disposable)?.dispose()
 
         super.channelInactive(ctx)
     }

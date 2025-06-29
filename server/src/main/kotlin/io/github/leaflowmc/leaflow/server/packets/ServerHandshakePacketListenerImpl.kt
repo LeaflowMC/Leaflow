@@ -21,7 +21,4 @@ class ServerHandshakePacketListenerImpl(
 
         playerConnection.setProtocol(stage)
     }
-
-    override fun dispose() {
-    }
 }
