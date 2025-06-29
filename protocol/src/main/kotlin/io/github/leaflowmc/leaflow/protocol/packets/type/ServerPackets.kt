@@ -3,14 +3,7 @@
 package io.github.leaflowmc.leaflow.protocol.packets.type
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerConfigurationPacketListener
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacketListener
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPlayPacketListener
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerStatusPacketListener
-import io.github.leaflowmc.leaflow.protocol.packets.ServerPacket
-import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundConfigurationKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAlivePacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundAcknowledgeFinishConfigurationPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundClientInfoPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundKnownPacksPacket
@@ -18,115 +11,113 @@ import io.github.leaflowmc.leaflow.protocol.packets.handshake.ServerboundHandsha
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundEncryptionResponsePacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginAcknowledgedPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ServerboundLoginStartPacket
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundConfigurationPongPacket
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPlayPingPacket
-import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundStatusPingPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPingPacket
+import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPongPacket
 import io.github.leaflowmc.leaflow.protocol.packets.status.ServerboundStatusRequestPacket
 
-object ServerHandshakePackets : ProtocolInfo<ServerHandshakePacketListener, ServerPacket<ServerHandshakePacketListener, *>>() {
-    val HANDSHAKE = addPacket(ServerboundHandshakePacket.serializer())
+val ServerHandshakePackets = createProtocolInfo(ProtocolStage.HANDSHAKE) {
+    addPacket<ServerboundHandshakePacket>()
 }
 
-object ServerStatusPackets : ProtocolInfo<ServerStatusPacketListener, ServerPacket<ServerStatusPacketListener, *>>() {
-    val STATUS_REQUEST = addPacket(ServerboundStatusRequestPacket.serializer())
-    val PING_REQUEST = addPacket(ServerboundStatusPingPacket.serializer())
+val ServerStatusPackets = createProtocolInfo(ProtocolStage.STATUS) {
+    addPacket<ServerboundStatusRequestPacket>()
+    addPacket<ServerboundPingPacket>()
 }
 
-object ServerLoginPackets : ProtocolInfo<ServerLoginPacketListener, ServerPacket<ServerLoginPacketListener, *>>() {
-    val LOGIN_START = addPacket(ServerboundLoginStartPacket.serializer())
-    val ENCRYPTION_RESPONSE = addPacket(ServerboundEncryptionResponsePacket.serializer())
-    val LOGIN_PLUGIN_RESPONSE = skipPacket()
-    val LOGIN_ACKNOWLEDGED = addPacket(ServerboundLoginAcknowledgedPacket.serializer())
-    val COOKIE_RESPONSE = skipPacket()
+val ServerLoginPackets = createProtocolInfo(ProtocolStage.LOGIN) {
+    addPacket<ServerboundLoginStartPacket>()
+    addPacket<ServerboundEncryptionResponsePacket>()
+    skipPacket("LOGIN_PLUGIN_RESPONSE")
+    addPacket<ServerboundLoginAcknowledgedPacket>()
+    skipPacket("COOKIE_RESPONSE")
 }
 
-object ServerConfigurationPackets : ProtocolInfo<ServerConfigurationPacketListener, ServerPacket<ServerConfigurationPacketListener, *>>() {
-    val CLIENT_INFORMATION = addPacket(ServerboundClientInfoPacket.serializer())
-    val COOKIE_RESPONSE = skipPacket()
-    val PLUGIN_MESSAGE = skipPacket()
-    val ACKNOWLEDGE_FINISH_CONFIGURATION = addPacket(ServerboundAcknowledgeFinishConfigurationPacket.serializer())
-    val KEEP_ALIVE = addPacket(ServerboundConfigurationKeepAlivePacket.serializer())
-    val PONG = addPacket(ServerboundConfigurationPongPacket.serializer())
-    val RESOURCE_PACK_RESPONSE = skipPacket()
-    val KNOWN_PACKS = addPacket(ServerboundKnownPacksPacket.serializer())
-    val CUSTOM_CLICK_ACTION = skipPacket()
+val ServerConfigurationPackets = createProtocolInfo(ProtocolStage.CONFIGURATION) {
+    addPacket<ServerboundClientInfoPacket>()
+    skipPacket("COOKIE_RESPONSE")
+    skipPacket("PLUGIN_MESSAGE")
+    addPacket<ServerboundAcknowledgeFinishConfigurationPacket>()
+    addPacket<ServerboundKeepAlivePacket>()
+    addPacket<ServerboundPongPacket>()
+    skipPacket("RESOURCE_PACK_RESPONSE")
+    addPacket<ServerboundKnownPacksPacket>()
+    skipPacket("CUSTOM_CLICK_ACTION")
 }
 
-object ServerPlayPackets : ProtocolInfo<ServerPlayPacketListener, ServerPacket<ServerPlayPacketListener, *>>() {
-    val CONFIRM_TELEPORTATION = skipPacket()
-    val QUERY_BLOCK_ENTITY_TAG = skipPacket()
-    val BUNDLE_ITEM_SELECTED = skipPacket()
-    val CHANGE_DIFFICULTY = skipPacket()
-    val ACKNOWLEDGE_MESSAGE = skipPacket()
-    val CHAT_COMMAND = skipPacket()
-    val SIGNED_CHAT_COMMAND = skipPacket()
-    val CHAT_MESSAGE = skipPacket()
-    val PLAYER_SESSION = skipPacket()
-    val CHUNK_BATCH_RECEIVED = skipPacket()
-    val CLIENT_STATUS = skipPacket()
-    val CLIENT_TICK_END = skipPacket()
-    val CLIENT_INFORMATION = skipPacket()
-    val COMMAND_SUGGESTONS_REQUEST = skipPacket()
-    val ACKNOWLEDGE_CONFIGURATION = skipPacket()
-    val CLICK_CONTAINER_BUTTON = skipPacket()
-    val CLICK_CONTAINER = skipPacket()
-    val CLOSE_CONTAINER = skipPacket()
-    val CHANGE_CONTAINER_SLOT_STATE = skipPacket()
-    val COOKIE_RESPONSE = skipPacket()
-    val PLUGIN_MESSAGE = skipPacket()
-    val DEBUG_SAMPLE_SUBSCRIPTION = skipPacket()
-    val EDIT_BOOK = skipPacket()
-    val QUERY_ENTITY_TAG = skipPacket()
-    val INTERACT = skipPacket()
-    val JIGSAW_GENERATE = skipPacket()
-    val KEEP_ALIVE = skipPacket()
-    val LOCK_DIFFICULTY = skipPacket()
-    val SET_PLAYER_POSITION = skipPacket()
-    val SET_PLAYER_POSITION_AND_ROTATION = skipPacket()
-    val SET_PLAYER_ROTATION = skipPacket()
-    val SET_PLAYER_MOVEMENT_FLAGS = skipPacket()
-    val MOVE_VEHICLE = skipPacket()
-    val PADDLE_BOAT = skipPacket()
-    val PICK_ITEM_FROM_BLOCK = skipPacket()
-    val PICK_ITEM_FROM_ENTITY = skipPacket()
-    val PING_REQUEST = addPacket(ServerboundPlayPingPacket.serializer())
-    val PLACE_RECIPE = skipPacket()
-    val PLAYER_ABILITIES = skipPacket()
-    val PLAYER_ACTION = skipPacket()
-    val PLAYER_COMMAND = skipPacket()
-    val PLAYER_INPUT = skipPacket()
-    val PLAYER_LOADED = skipPacket()
-    val PONG = skipPacket()
-    val CHANGE_RECIPE_BOOK_SETTINGS = skipPacket()
-    val SET_SEEN_RECIPE = skipPacket()
-    val RENAME_ITEM = skipPacket()
-    val RESOURCE_PACK_RESPONSE = skipPacket()
-    val SEEN_ADVANCEMENTS = skipPacket()
-    val SELECT_TRADE = skipPacket()
-    val SET_BEACON_EFFECT = skipPacket()
-    val SET_HELD_ITEM = skipPacket()
-    val PROGRAM_COMMAND_BLOCK = skipPacket()
-    val PROGRAM_COMMAND_BLOCK_MINECART = skipPacket()
-    val SET_CREATIVE_MODE_SLOT = skipPacket()
-    val PROGRAM_JIGSAW_BLOCK = skipPacket()
-    val PROGRAM_STRUCTURE_BLOCK = skipPacket()
-    val SET_TEST_BLOCK = skipPacket()
-    val UPDATE_SIGN = skipPacket()
-    val SWING_ARM = skipPacket()
-    val TELEPORT_TO_ENTITY = skipPacket()
-    val TEST_INSTANCE_BLOCK_ACTION = skipPacket()
-    val USE_ITEM_ON = skipPacket()
-    val USE_ITEM = skipPacket()
-    val CUSTOM_CLICK_ACTION = skipPacket()
+val ServerPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
+    skipPacket("CONFIRM_TELEPORTATION")
+    skipPacket("QUERY_BLOCK_ENTITY_TAG")
+    skipPacket("BUNDLE_ITEM_SELECTED")
+    skipPacket("CHANGE_DIFFICULTY")
+    skipPacket("ACKNOWLEDGE_MESSAGE")
+    skipPacket("CHAT_COMMAND")
+    skipPacket("SIGNED_CHAT_COMMAND")
+    skipPacket("CHAT_MESSAGE")
+    skipPacket("PLAYER_SESSION")
+    skipPacket("CHUNK_BATCH_RECEIVED")
+    skipPacket("CLIENT_STATUS")
+    skipPacket("CLIENT_TICK_END")
+    skipPacket("CLIENT_INFORMATION")
+    skipPacket("COMMAND_SUGGESTIONS_REQUEST")
+    skipPacket("ACKNOWLEDGE_CONFIGURATION")
+    skipPacket("CLICK_CONTAINER_BUTTON")
+    skipPacket("CLICK_CONTAINER")
+    skipPacket("CLOSE_CONTAINER")
+    skipPacket("CHANGE_CONTAINER_SLOT_STATE")
+    skipPacket("COOKIE_RESPONSE")
+    skipPacket("PLUGIN_MESSAGE")
+    skipPacket("DEBUG_SAMPLE_SUBSCRIPTION")
+    skipPacket("EDIT_BOOK")
+    skipPacket("QUERY_ENTITY_TAG")
+    skipPacket("INTERACT")
+    skipPacket("JIGSAW_GENERATE")
+    addPacket<ServerboundKeepAlivePacket>()
+    skipPacket("LOCK_DIFFICULTY")
+    skipPacket("SET_PLAYER_POSITION")
+    skipPacket("SET_PLAYER_POSITION_AND_ROTATION")
+    skipPacket("SET_PLAYER_ROTATION")
+    skipPacket("SET_PLAYER_MOVEMENT_FLAGS")
+    skipPacket("MOVE_VEHICLE")
+    skipPacket("PADDLE_BOAT")
+    skipPacket("PICK_ITEM_FROM_BLOCK")
+    skipPacket("PICK_ITEM_FROM_ENTITY")
+    addPacket<ServerboundPingPacket>()
+    skipPacket("PLACE_RECIPE")
+    skipPacket("PLAYER_ABILITIES")
+    skipPacket("PLAYER_ACTION")
+    skipPacket("PLAYER_COMMAND")
+    skipPacket("PLAYER_INPUT")
+    skipPacket("PLAYER_LOADED")
+    skipPacket("PONG")
+    skipPacket("CHANGE_RECIPE_BOOK_SETTINGS")
+    skipPacket("SET_SEEN_RECIPE")
+    skipPacket("RENAME_ITEM")
+    skipPacket("RESOURCE_PACK_RESPONSE")
+    skipPacket("SEEN_ADVANCEMENTS")
+    skipPacket("SELECT_TRADE")
+    skipPacket("SET_BEACON_EFFECT")
+    skipPacket("SET_HELD_ITEM")
+    skipPacket("PROGRAM_COMMAND_BLOCK")
+    skipPacket("PROGRAM_COMMAND_BLOCK_MINECART")
+    skipPacket("SET_CREATIVE_MODE_SLOT")
+    skipPacket("PROGRAM_JIGSAW_BLOCK")
+    skipPacket("PROGRAM_STRUCTURE_BLOCK")
+    skipPacket("SET_TEST_BLOCK")
+    skipPacket("UPDATE_SIGN")
+    skipPacket("SWING_ARM")
+    skipPacket("TELEPORT_TO_ENTITY")
+    skipPacket("TEST_INSTANCE_BLOCK_ACTION")
+    skipPacket("USE_ITEM_ON")
+    skipPacket("USE_ITEM")
+    skipPacket("CUSTOM_CLICK_ACTION")
 }
 
-fun getServerProtocolFor(stage: ProtocolStage): ProtocolInfo<ServerPacketListener, ServerPacket<ServerPacketListener, *>> {
-    @Suppress("UNCHECKED_CAST")
+fun getServerProtocolFor(stage: ProtocolStage): ProtocolInfo {
     return when (stage) {
         ProtocolStage.HANDSHAKE -> ServerHandshakePackets
         ProtocolStage.STATUS -> ServerStatusPackets
         ProtocolStage.LOGIN -> ServerLoginPackets
         ProtocolStage.CONFIGURATION -> ServerConfigurationPackets
         ProtocolStage.PLAY -> ServerPlayPackets
-    } as ProtocolInfo<ServerPacketListener, ServerPacket<ServerPacketListener, *>>
+    }
 }

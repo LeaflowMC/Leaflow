@@ -1,12 +1,17 @@
 package io.github.leaflowmc.leaflow.server
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
+import io.github.leaflowmc.leaflow.protocol.packets.type.ProtocolInfo
+import io.github.leaflowmc.leaflow.protocol.packets.type.getClientProtocolFor
+import io.github.leaflowmc.leaflow.protocol.packets.type.getServerProtocolFor
 import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.SERVER_KEY_PAIR_ALGORITHM
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER_SWAPPER 
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PLAYER_CONNECTION
+import io.github.leaflowmc.leaflow.server.netty.ChannelOutboundProtocolSwapper
 import io.github.leaflowmc.leaflow.server.netty.PacketDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketEncoder
 import io.github.leaflowmc.leaflow.server.netty.PacketSizeDecoder
@@ -60,10 +65,10 @@ class LeaflowServerImpl(
                             .addLast(LENGTH_ENCODER, PacketSizeEncoder())
                             .addLast(LENGTH_DECODER, PacketSizeDecoder())
 
-                            .addLast(PACKET_ENCODER,
-                                PacketEncoder())
+                            .addLast(PACKET_ENCODER_SWAPPER ,
+                                ChannelOutboundProtocolSwapper())
                             .addLast(PACKET_DECODER,
-                                PacketDecoder(ProtocolStage.HANDSHAKE))
+                                PacketDecoder(getServerProtocolFor(ProtocolStage.HANDSHAKE)))
                             .addLast(PLAYER_CONNECTION, playerConnection)
                     }
                 })

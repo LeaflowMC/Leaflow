@@ -4,6 +4,6 @@ import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAliveP
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPongPacket
 
 interface ServerCommonPacketListener : ServerPacketListener {
-    fun keepAlive(packet: ServerboundKeepAlivePacket<*, *>)
-    fun pong(packet: ServerboundPongPacket<*, *>)
+    fun keepAlive(packet: ServerboundKeepAlivePacket)
+    fun pong(packet: ServerboundPongPacket)
 }

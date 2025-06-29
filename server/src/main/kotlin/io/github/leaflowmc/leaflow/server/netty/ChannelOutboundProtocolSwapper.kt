@@ -8,7 +8,7 @@ import io.netty.channel.ChannelPromise
 import io.netty.handler.codec.DecoderException
 import io.netty.util.ReferenceCountUtil
 
-class ChannelInboundProtocolSwapper : ChannelDuplexHandler() {
+class ChannelOutboundProtocolSwapper : ChannelDuplexHandler() {
     override fun write(ctx: ChannelHandlerContext, msg: Any, promise: ChannelPromise) {
         if (msg is Task) {
             try {
@@ -23,10 +23,10 @@ class ChannelInboundProtocolSwapper : ChannelDuplexHandler() {
     }
 
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
-        if (msg is ByteBuf || msg is Packet<*>) {
+        if (msg is Packet<*>) {
             ReferenceCountUtil.release(msg)
 
-            throw DecoderException("Can't process packet: inbound handler isn't configured")
+            throw DecoderException("Can't process packet (${msg::class.simpleName}): outbound handler isn't configured")
         }
 
         ctx.fireChannelRead(msg)

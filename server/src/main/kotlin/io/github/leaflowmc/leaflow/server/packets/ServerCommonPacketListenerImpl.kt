@@ -33,13 +33,10 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
     private val pingDeferred = mutableMapOf<Int, Pair<Instant, CompletableDeferred<Duration>>>()
     private val pingCounter = AtomicInt(0)
 
-    abstract fun getPingPacket(timestamp: Int): ClientboundPingPacket<*, *>
-    abstract fun getKeepAlivePacket(id: Long): ClientboundKeepAlivePacket<*, *>
-
     final override fun sendPing(): Deferred<Duration> {
         val id = pingCounter.fetchAndAdd(1)
 
-        playerConnection.sendPacket(getPingPacket(id))
+        playerConnection.sendPacket(ClientboundPingPacket(id))
 
         val deferred = CompletableDeferred<Duration>()
         pingDeferred[id] = Clock.System.now() to deferred
@@ -52,17 +49,13 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
     }
 
     private fun keepConnectionAlive() {
-        val lastKeepAlive = this.lastKeepAlive
-        val keepAliveAnswered = this.keepAliveAnswered
-
         val now = System.currentTimeMillis()
 
-        if (now - lastKeepAlive > KEEP_ALIVE_DELAY) {
-            if (keepAliveAnswered) {
-                val id = System.currentTimeMillis()
-                playerConnection.sendPacket(getKeepAlivePacket(id))
+        if (now - this.lastKeepAlive > KEEP_ALIVE_DELAY) {
+            if (this.keepAliveAnswered) {
+                playerConnection.sendPacket(ClientboundKeepAlivePacket(now))
 
-                this.lastKeepAlive = id
+                this.lastKeepAlive = now
                 this.keepAliveAnswered = false
             } else {
                 LOGGER.warn("ALARM, CLIENT DIDN'T RESPOND TO KEEP ALIVE")
@@ -71,7 +64,7 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
         }
     }
 
-    final override fun keepAlive(packet: ServerboundKeepAlivePacket<*, *>) {
+    final override fun keepAlive(packet: ServerboundKeepAlivePacket) {
         if (!this.keepAliveAnswered && this.lastKeepAlive == packet.id) {
             this.keepAliveAnswered = true
         } else {
@@ -80,7 +73,7 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
         }
     }
 
-    final override fun pong(packet: ServerboundPongPacket<*, *>) {
+    final override fun pong(packet: ServerboundPongPacket) {
         val (lastPing, deferred) = pingDeferred.remove(packet.id) ?: run {
             LOGGER.warn("invalid pong packet with id: ${packet.id}")
             return

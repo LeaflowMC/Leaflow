@@ -1,16 +1,11 @@
 package io.github.leaflowmc.leaflow.protocol.packets.status
 
-import io.github.leaflowmc.leaflow.protocol.packets.ServerPacket
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerStatusPacketListener
-import io.github.leaflowmc.leaflow.protocol.packets.type.PacketType
-import io.github.leaflowmc.leaflow.protocol.packets.type.ServerStatusPackets
+import io.github.leaflowmc.leaflow.protocol.packets.ServerPacket
 import kotlinx.serialization.Serializable
 
 @Serializable
-class ServerboundStatusRequestPacket : ServerPacket<ServerStatusPacketListener, ServerboundStatusRequestPacket> {
-    override val type: PacketType<ServerboundStatusRequestPacket>
-        get() = ServerStatusPackets.STATUS_REQUEST
-
+class ServerboundStatusRequestPacket : ServerPacket<ServerStatusPacketListener> {
     override fun handle(listener: ServerStatusPacketListener) {
         listener.statusRequest(this)
     }

@@ -19,6 +19,7 @@ class ServerHandshakePacketListenerImpl(
             ServerboundHandshakePacket.Intent.NONE -> error("illegal enum.")
         }
 
-        playerConnection.setProtocol(stage)
+        playerConnection.setInboundProtocol(stage)
+        playerConnection.setOutboundProtocol(stage)
     }
 }

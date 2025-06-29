@@ -7,6 +7,8 @@ import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.protocol.packets.Packet
+import io.github.leaflowmc.leaflow.protocol.packets.type.getClientProtocolFor
+import io.github.leaflowmc.leaflow.protocol.packets.type.getServerProtocolFor
 import io.github.leaflowmc.leaflow.server.LeaflowServer
 import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.ENCRYPTION_CIPHER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER_DECODER
@@ -14,6 +16,7 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
@@ -21,12 +24,7 @@ import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.apache.logging.log4j.LogManager
 import java.security.Key
 import javax.crypto.Cipher
@@ -87,9 +85,23 @@ class PlayerConnectionImpl(
             .addBefore(LENGTH_DECODER, CIPHER_DECODER, PacketDecryptor(decipher))
     }
 
-    override fun setProtocol(stage: ProtocolStage, listener: ServerPacketListener) {
+    override fun setOutboundProtocol(stage: ProtocolStage) {
+        val future = channel.writeAndFlush(ChannelOutboundProtocolSwapper.Task { ctx ->
+            channel.pipeline().replace(ctx.name(), PACKET_ENCODER, PacketEncoder(getClientProtocolFor(stage)))
+        })
+
+        try {
+            future.syncUninterruptibly()
+        } catch (e: Throwable) {
+            LOGGER.error("Exception during protocol change", e)
+            throw e
+        }
+
+    }
+
+    override fun setInboundProtocol(stage: ProtocolStage, listener: ServerPacketListener) {
         val future = channel.writeAndFlush(ChannelInboundProtocolSwapper.Task { ctx ->
-            channel.pipeline().replace(ctx.name(), PACKET_DECODER, PacketDecoder(stage))
+            channel.pipeline().replace(ctx.name(), PACKET_DECODER, PacketDecoder(getServerProtocolFor(stage)))
             channel.config().isAutoRead = true
         })
 
@@ -101,9 +113,7 @@ class PlayerConnectionImpl(
         }
 
         (packetListener as? Disposable)?.dispose()
-
         packetListener = listener
-        protocol = stage
     }
 
     override fun channelActive(ctx: ChannelHandlerContext) {
@@ -114,7 +124,7 @@ class PlayerConnectionImpl(
     @Suppress("UNCHECKED_CAST")
     override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
         try {
-            (msg as Packet<ServerPacketListener, *>).handle(packetListener)
+            (msg as Packet<ServerPacketListener>).handle(packetListener)
         } catch (e: ClassCastException) {
             LOGGER.error(
                 "The listener \"${packetListener::class.simpleName}\" can't handle the packet \"${msg::class.simpleName}\"",
@@ -141,7 +151,7 @@ class PlayerConnectionImpl(
         ctx.close()
     }
 
-    override fun sendPacket(packet: ClientPacket<*, *>) {
+    override fun sendPacket(packet: ClientPacket<*>) {
         channel.writeAndFlush(packet)
     }
 

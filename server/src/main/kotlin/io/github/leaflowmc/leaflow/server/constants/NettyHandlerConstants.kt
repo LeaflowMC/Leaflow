@@ -9,6 +9,8 @@ object NettyHandlerConstants {
 
     const val PACKET_ENCODER = "encoder"
     const val PACKET_DECODER = "decoder"
+
+    const val PACKET_ENCODER_SWAPPER = "encoder_config"
     const val PACKET_DECODER_SWAPPER = "decoder_config"
 
     const val PLAYER_CONNECTION = "connection"
