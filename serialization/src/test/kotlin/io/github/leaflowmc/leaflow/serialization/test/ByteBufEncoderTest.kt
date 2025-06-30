@@ -2,6 +2,7 @@ package io.github.leaflowmc.leaflow.serialization.test
 
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
+import io.github.leaflowmc.leaflow.common.utils.writeString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
 import io.github.leaflowmc.leaflow.commonTest.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
@@ -136,6 +137,26 @@ class ByteBufEncoderTest {
             writeInt(69)
             writeByte(1)
             writeVarInt(2)
+        }
+
+        assertContentEquals(
+            output,
+            byteBufBytes { encode(input) }
+        )
+    }
+
+    @Test
+    fun testNonLengthPrefixedCollection() {
+        val input = ClassWithFixedLength(
+            (1..69).toList().toIntArray(),
+            "hello",
+            (1..169).map(Int::toByte).toByteArray()
+        )
+
+        val output = byteBufBytes {
+            (1..69).forEach(::writeInt)
+            writeString("hello")
+            (1..169).forEach(::writeByte)
         }
 
         assertContentEquals(

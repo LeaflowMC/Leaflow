@@ -1,6 +1,7 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
 import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.annotations.NotLengthPrefixed
 import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
@@ -54,3 +55,26 @@ data class ClassWithEnum(
     @ProtocolEnumKind(ProtocolEnumKind.Kind.VAR_INT)
     val varIntEnum: TestEnum
 )
+
+@Suppress("EqualsOrHashCode")
+@Serializable
+class ClassWithFixedLength(
+    @NotLengthPrefixed(69)
+    val list: IntArray,
+    @NotLengthPrefixed(5)
+    val str: String,
+    @NotLengthPrefixed
+    val data: ByteArray
+) {
+    init {
+        require(list.size == 69) { "list size ${list.size} != 69" }
+        require(str.length == 5) { "string size ${str.length} != 5" }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is ClassWithFixedLength) return false
+        return other.list.contentEquals(this.list) &&
+                other.data.contentEquals(this.data) &&
+                other.str == this.str
+    }
+}
