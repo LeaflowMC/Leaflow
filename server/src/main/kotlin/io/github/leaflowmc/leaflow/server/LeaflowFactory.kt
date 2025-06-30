@@ -1,5 +1,6 @@
 package io.github.leaflowmc.leaflow.server
 
+import io.github.leaflowmc.leaflow.common.GameProfile
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
@@ -11,7 +12,7 @@ import io.github.leaflowmc.leaflow.server.player.Player
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 
 interface LeaflowFactory {
-    fun createPlayer(networkState: PlayerConnection): Player
+    fun createPlayer(networkState: PlayerConnection, gameProfile: GameProfile): Player
     fun createPlayerConnection(server: LeaflowServer, protocol: ProtocolStage): PlayerConnection
 
     fun createServerHandshakePacketListener(connection: PlayerConnection): ServerHandshakePacketListener
