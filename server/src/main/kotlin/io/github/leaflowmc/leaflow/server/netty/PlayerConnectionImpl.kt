@@ -23,6 +23,7 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.TextConstants.DISCONNECT_INVALID_PACKET
+import io.github.leaflowmc.leaflow.server.createServerPacketListenerFor
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.event.PlayerFinishLoginEvent

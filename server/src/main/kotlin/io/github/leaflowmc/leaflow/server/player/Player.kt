@@ -6,6 +6,6 @@ import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 interface Player {
     val connection: PlayerConnection
     val profile: GameProfile
-
-    fun sendPacket(packet: ClientPacket<*>) = connection.sendPacket(packet)
 }
+
+fun Player.sendPacket(packet: ClientPacket<*>) = connection.sendPacket(packet)

@@ -20,14 +20,14 @@ interface LeaflowFactory {
     fun createServerLoginPacketListener(connection: PlayerConnection): ServerLoginPacketListener
     fun createServerConfigurationPacketListener(connection: PlayerConnection): LeaflowServerConfigurationPacketListener
     fun createServerPlayPacketListener(connection: PlayerConnection): LeaflowServerPlayPacketListener
+}
 
-    fun createServerPacketListenerFor(stage: ProtocolStage, connection: PlayerConnection): ServerPacketListener {
-        return when (stage) {
-            ProtocolStage.HANDSHAKE -> createServerHandshakePacketListener(connection)
-            ProtocolStage.STATUS -> createServerStatusPacketListener(connection)
-            ProtocolStage.LOGIN -> createServerLoginPacketListener(connection)
-            ProtocolStage.CONFIGURATION -> createServerConfigurationPacketListener(connection)
-            ProtocolStage.PLAY -> createServerPlayPacketListener(connection)
-        }
+fun LeaflowFactory.createServerPacketListenerFor(stage: ProtocolStage, connection: PlayerConnection): ServerPacketListener {
+    return when (stage) {
+        ProtocolStage.HANDSHAKE -> createServerHandshakePacketListener(connection)
+        ProtocolStage.STATUS -> createServerStatusPacketListener(connection)
+        ProtocolStage.LOGIN -> createServerLoginPacketListener(connection)
+        ProtocolStage.CONFIGURATION -> createServerConfigurationPacketListener(connection)
+        ProtocolStage.PLAY -> createServerPlayPacketListener(connection)
     }
 }
