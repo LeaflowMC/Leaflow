@@ -9,13 +9,13 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
+    api(project(":common"))
     api(project(":protocol"))
     implementation(project(":serialization"))
     api(project(":text"))
 
     implementation(libs.netty.all)
-    implementation(libs.kotlinx.coroutines)
+    api(libs.kotlinx.coroutines)
     implementation(libs.bundles.kotlinx.serialization)
     implementation(libs.fastutil)
 

@@ -11,6 +11,7 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER_SWAPPER 
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PLAYER_CONNECTION
+import io.github.leaflowmc.leaflow.server.event.Event
 import io.github.leaflowmc.leaflow.server.netty.ChannelOutboundProtocolSwapper
 import io.github.leaflowmc.leaflow.server.netty.PacketDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketEncoder
@@ -24,6 +25,10 @@ import io.netty.channel.MultiThreadIoEventLoopGroup
 import io.netty.channel.nio.NioIoHandler
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.InetSocketAddress
@@ -47,6 +52,8 @@ class LeaflowServerImpl(
     private val workerGroup: MultiThreadIoEventLoopGroup
 
     override val keyPair: KeyPair = KeyPairGenerator.getInstance(SERVER_KEY_PAIR_ALGORITHM).generateKeyPair()
+
+    override val events = MutableSharedFlow<Event>(extraBufferCapacity = 100, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     init {
         val nioFactory = NioIoHandler.newFactory()

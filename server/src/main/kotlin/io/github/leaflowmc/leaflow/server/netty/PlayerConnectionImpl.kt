@@ -25,6 +25,7 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET
 import io.github.leaflowmc.leaflow.server.constants.TextConstants.DISCONNECT_INVALID_PACKET
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
+import io.github.leaflowmc.leaflow.server.event.PlayerFinishLoginEvent
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
 import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessage
 import io.github.leaflowmc.leaflow.server.player.Player
@@ -101,6 +102,8 @@ class PlayerConnectionImpl(
 
         val player = server.factory.createPlayer(this, profile)
         this._player.complete(player)
+
+        server.events.tryEmit(PlayerFinishLoginEvent(this, player))
     }
 
     override fun disconnect(reason: TextComponent) {
