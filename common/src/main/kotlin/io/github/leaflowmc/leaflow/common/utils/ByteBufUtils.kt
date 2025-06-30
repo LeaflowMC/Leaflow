@@ -34,7 +34,11 @@ fun ByteBuf.writeVarInt(int: Int) {
 
 fun ByteBuf.writePrefixedString(string: String) {
     writeVarInt(string.length)
-    this.writeBytes(string.toByteArray(StandardCharsets.UTF_8))
+    writeString(string)
+}
+
+fun ByteBuf.writeString(str: String) {
+    this.writeBytes(str.toByteArray(StandardCharsets.UTF_8))
 }
 
 fun ByteBuf.readPrefixedString(): String {

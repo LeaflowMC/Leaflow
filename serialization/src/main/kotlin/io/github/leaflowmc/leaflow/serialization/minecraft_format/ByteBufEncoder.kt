@@ -4,6 +4,8 @@ import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
 import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.common.utils.writeString
+import io.github.leaflowmc.leaflow.serialization.annotations.NotLengthPrefixed
 import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.annotations.protocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.nbt.encodeToNbt
@@ -12,6 +14,7 @@ import io.netty.buffer.ByteBufOutputStream
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.AbstractEncoder
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.modules.EmptySerializersModule
@@ -26,6 +29,8 @@ class ByteBufEncoder(
     val byteBuf: ByteBuf,
     override val serializersModule: SerializersModule
 ) : AbstractEncoder() {
+    private var lastElementAnnotations: Collection<Annotation>? = null
+
     override fun encodeByte(value: Byte) {
         byteBuf.writeByte(value.toInt())
     }
@@ -59,7 +64,14 @@ class ByteBufEncoder(
     }
 
     override fun encodeString(value: String) {
-        byteBuf.writePrefixedString(value)
+        val notLengthPrefixed = lastElementAnnotations
+            ?.firstNotNullOfOrNull { it as? NotLengthPrefixed }
+
+        if (notLengthPrefixed == null) {
+            byteBuf.writePrefixedString(value)
+        } else {
+            byteBuf.writeString(value)
+        }
     }
 
     override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
@@ -75,7 +87,10 @@ class ByteBufEncoder(
     override fun encodeNotNullMark() = encodeBoolean(true)
 
     override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
-        encodeVarInt(collectionSize)
+        if (lastElementAnnotations?.any { it is NotLengthPrefixed } != true) {
+            encodeVarInt(collectionSize)
+        }
+
         return this
     }
 
@@ -92,6 +107,12 @@ class ByteBufEncoder(
         } else {
             super.encodeSerializableValue(serializer, value)
         }
+    }
+
+    override fun encodeElement(descriptor: SerialDescriptor, index: Int): Boolean {
+        lastElementAnnotations = descriptor.getElementAnnotations(index)
+
+        return true
     }
 }
 
