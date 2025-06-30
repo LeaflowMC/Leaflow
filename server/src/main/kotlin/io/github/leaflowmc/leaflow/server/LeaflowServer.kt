@@ -1,7 +1,10 @@
 package io.github.leaflowmc.leaflow.server
 
+import io.github.leaflowmc.leaflow.server.event.Event
 import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessages
 import io.github.leaflowmc.leaflow.text.component.TextComponent
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import java.security.KeyPair
 
 interface LeaflowServer {
@@ -31,6 +34,21 @@ interface LeaflowServer {
      * Plugin messages "registry"
      */
     val pluginMessages: PluginMessages
+
+    /**
+     * A mutable shared flow of events. Use to send or collect events
+     *
+     * Example of subscribing to an event:
+     * ```
+     * events.filterIsInstance<ClientBrandEvent>()
+     *     .collect { event ->
+     *         val player = event.player.await()
+     *
+     *         println("received ${player.profile.name}'s brand: ${event.brand}")
+     *     }
+     * ```
+     */
+    val events: MutableSharedFlow<Event>
 
     /**
      * Start the server.
