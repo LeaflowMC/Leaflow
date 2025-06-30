@@ -1,6 +1,5 @@
 package io.github.leaflowmc.leaflow.server.netty
 
-import io.github.leaflowmc.leaflow.common.api.Disposable
 import io.github.leaflowmc.leaflow.common.api.Tickable
 import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.common.utils.ticks
@@ -157,7 +156,6 @@ class PlayerConnectionImpl(
             throw e
         }
 
-        (packetListener as? Disposable)?.dispose()
         packetListener = server.factory.createServerPacketListenerFor(stage, this)
     }
 
@@ -181,7 +179,6 @@ class PlayerConnectionImpl(
 
     override fun channelInactive(ctx: ChannelHandlerContext) {
         scope.cancel("Channel is inactive")
-        (packetListener as? Disposable)?.dispose()
 
         super.channelInactive(ctx)
     }
