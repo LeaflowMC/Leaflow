@@ -62,6 +62,7 @@ val ServerPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("QUERY_BLOCK_ENTITY_TAG")
     skipPacket("BUNDLE_ITEM_SELECTED")
     skipPacket("CHANGE_DIFFICULTY")
+    skipPacket("CHANGE_GAMEMODE")
     skipPacket("ACKNOWLEDGE_MESSAGE")
     skipPacket("CHAT_COMMAND")
     skipPacket("SIGNED_CHAT_COMMAND")
