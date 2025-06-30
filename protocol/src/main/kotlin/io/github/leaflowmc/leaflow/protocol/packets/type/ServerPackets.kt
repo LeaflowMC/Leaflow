@@ -4,6 +4,7 @@ package io.github.leaflowmc.leaflow.protocol.packets.type
 
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundPluginMessagePacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundAcknowledgeFinishConfigurationPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundClientInfoPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundKnownPacksPacket
@@ -47,7 +48,7 @@ val ServerLoginPackets = createProtocolInfo(ProtocolStage.LOGIN) {
 val ServerConfigurationPackets = createProtocolInfo(ProtocolStage.CONFIGURATION) {
     addPacket<ServerboundClientInfoPacket>()
     skipPacket("COOKIE_RESPONSE")
-    skipPacket("PLUGIN_MESSAGE")
+    addPacket<ServerboundPluginMessagePacket>()
     addPacket<ServerboundAcknowledgeFinishConfigurationPacket>()
     addPacket<ServerboundKeepAlivePacket>()
     addPacket<ServerboundPongPacket>()
@@ -77,7 +78,7 @@ val ServerPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("CLOSE_CONTAINER")
     skipPacket("CHANGE_CONTAINER_SLOT_STATE")
     skipPacket("COOKIE_RESPONSE")
-    skipPacket("PLUGIN_MESSAGE")
+    addPacket<ServerboundPluginMessagePacket>()
     skipPacket("DEBUG_SAMPLE_SUBSCRIPTION")
     skipPacket("EDIT_BOOK")
     skipPacket("QUERY_ENTITY_TAG")

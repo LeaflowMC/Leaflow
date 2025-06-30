@@ -4,6 +4,7 @@ import io.github.leaflowmc.leaflow.common.api.Disposable
 import io.github.leaflowmc.leaflow.common.api.Tickable
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundKeepAlivePacket
 import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundPluginMessagePacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPongPacket
 import io.github.leaflowmc.leaflow.server.constants.TextConstants
@@ -85,6 +86,9 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
 
         val now = Clock.System.now()
         deferred.complete(now - lastPing)
+    }
+
+    override fun pluginMessage(packet: ServerboundPluginMessagePacket) {
     }
 
     override fun dispose() {

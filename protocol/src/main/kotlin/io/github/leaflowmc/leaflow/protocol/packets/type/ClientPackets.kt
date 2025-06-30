@@ -6,6 +6,7 @@ import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundCustomReportDetailsPacket
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundDisconnectPacket
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundKeepAlivePacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundPluginMessagePacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundFinishConfigurationPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundKnownPacksPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundResetChatPacket
@@ -48,7 +49,7 @@ val ClientLoginPackets = createProtocolInfo(ProtocolStage.LOGIN) {
 
 val ClientConfigurationPackets = createProtocolInfo(ProtocolStage.CONFIGURATION) {
     skipPacket("COOKIE_REQUEST")
-    skipPacket("PLUGIN_MESSAGE")
+    addPacket<ClientboundPluginMessagePacket>()
     addPacket<ClientboundDisconnectPacket>()
     addPacket<ClientboundFinishConfigurationPacket>()
     addPacket<ClientboundKeepAlivePacket>()
@@ -93,7 +94,7 @@ val ClientPlayPackets = createProtocolInfo(ProtocolStage.PLAY) {
     skipPacket("COOKIE_REQUEST")
     skipPacket("SET_COOLDOWN")
     skipPacket("CHAT_SUGGESTIONS")
-    skipPacket("PLUGIN_MESSAGE")
+    addPacket<ClientboundPluginMessagePacket>()
     skipPacket("DAMAGE_EVENT")
     skipPacket("DEBUG_SAMPLE")
     skipPacket("DELETE_MESSAGE")
