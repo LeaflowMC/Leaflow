@@ -1,11 +1,10 @@
-@file:OptIn(ExperimentalSerializationApi::class)
-
 package io.github.leaflowmc.leaflow.serialization.minecraft_format
 
+import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.readPrefixedString
 import io.github.leaflowmc.leaflow.common.utils.readVarInt
-import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.annotations.NotLengthPrefixed
 import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.annotations.protocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
@@ -15,19 +14,22 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
-import kotlinx.serialization.encoding.AbstractDecoder
+import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.CompositeDecoder
-import kotlinx.serialization.encoding.CompositeDecoder.Companion.DECODE_DONE
-import kotlinx.serialization.modules.EmptySerializersModule
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.serializer
+import kotlinx.serialization.encoding.Decoder
 import net.kyori.adventure.nbt.BinaryTagIO
 import java.io.ByteArrayOutputStream
+import java.nio.charset.StandardCharsets
 
-val varIntSerializer = serializer<VarInt>()
-
-abstract class AbstractByteBufDecoder : AbstractDecoder() {
+@OptIn(ExperimentalSerializationApi::class)
+abstract class AbstractByteBufDecoder : Decoder, CompositeDecoder {
     protected abstract val buffer: ByteBuf
+
+    private var lastElementAnnotations: Collection<Annotation>? = null
+
+    private fun pushAnnotations(descriptor: SerialDescriptor, index: Int) {
+        lastElementAnnotations = descriptor.getElementAnnotations(index)
+    }
 
     final override fun decodeByte(): Byte = buffer.readByte()
     final override fun decodeBoolean(): Boolean = buffer.readBoolean()
@@ -37,9 +39,24 @@ abstract class AbstractByteBufDecoder : AbstractDecoder() {
     final override fun decodeFloat(): Float = buffer.readFloat()
     final override fun decodeDouble(): Double = buffer.readDouble()
     final override fun decodeChar(): Char = buffer.readChar()
-    final override fun decodeString(): String = buffer.readPrefixedString()
     final override fun decodeNotNullMark(): Boolean = decodeBoolean()
-    final override fun decodeCollectionSize(descriptor: SerialDescriptor): Int = decodeVarInt()
+    override fun decodeCollectionSize(descriptor: SerialDescriptor): Int = decodeVarInt()
+
+    final override fun decodeString(): String {
+        val nonLengthPrefixed = lastElementAnnotations
+            ?.firstNotNullOfOrNull { it as? NotLengthPrefixed }
+
+        return if (nonLengthPrefixed == null) {
+            buffer.readPrefixedString()
+        } else if (nonLengthPrefixed.length >= 0) {
+            buffer.readString(nonLengthPrefixed.length, StandardCharsets.UTF_8)
+        } else {
+            val bytes = ByteArray(buffer.readableBytes())
+            buffer.readBytes(bytes)
+
+            bytes.toString(StandardCharsets.UTF_8)
+        }
+    }
 
     final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
         return when(enumDescriptor.protocolEnumKind()) {
@@ -92,49 +109,97 @@ abstract class AbstractByteBufDecoder : AbstractDecoder() {
 
     override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         if (descriptor.kind == StructureKind.LIST) {
-            return ByteBufCollectionDecoder(buffer, serializersModule)
+            return ByteBufCollectionDecoder(buffer, serializersModule, lastElementAnnotations)
         }
 
         return ByteBufObjectDecoder(buffer, serializersModule)
     }
-}
 
-class ByteBufDecoder(
-    override val buffer: ByteBuf,
-    override val serializersModule: SerializersModule
-) : AbstractByteBufDecoder() {
-    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-        throw IllegalStateException("there's no index unless there's a structure")
+    override fun <T> decodeSerializableElement(
+        descriptor: SerialDescriptor,
+        index: Int,
+        deserializer: DeserializationStrategy<T>,
+        previousValue: T?
+    ): T {
+        pushAnnotations(descriptor, index)
+
+        return decodeSerializableValue(deserializer)
     }
-}
 
-class ByteBufObjectDecoder(
-    override val buffer: ByteBuf,
-    override val serializersModule: SerializersModule
-) : AbstractByteBufDecoder() {
-    private var index: Int = 0
-
-    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-        if (index >= descriptor.elementsCount) return DECODE_DONE
-        return index++
+    override fun endStructure(descriptor: SerialDescriptor) {
     }
-}
 
-class ByteBufCollectionDecoder(
-    override val buffer: ByteBuf,
-    override val serializersModule: SerializersModule
-) : AbstractByteBufDecoder() {
-    private var index = 0
+    override fun decodeBooleanElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Boolean = decodeBoolean()
 
-    override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-        return index++
+    override fun decodeByteElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Byte = decodeByte()
+
+    override fun decodeCharElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Char = decodeChar()
+
+    override fun decodeShortElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Short = decodeShort()
+
+    override fun decodeIntElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Int = decodeInt()
+
+    override fun decodeLongElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Long = decodeLong()
+
+    override fun decodeFloatElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Float = decodeFloat()
+
+    override fun decodeDoubleElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Double = decodeDouble()
+
+    override fun decodeStringElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): String {
+        pushAnnotations(descriptor, index)
+
+        return decodeString()
     }
+
+    override fun decodeInlineElement(
+        descriptor: SerialDescriptor,
+        index: Int
+    ): Decoder {
+        return decodeInline(descriptor.getElementDescriptor(index))
+    }
+
+    @ExperimentalSerializationApi
+    override fun <T : Any> decodeNullableSerializableElement(
+        descriptor: SerialDescriptor,
+        index: Int,
+        deserializer: DeserializationStrategy<T?>,
+        previousValue: T?
+    ): T? {
+        val isNullabilitySupported = deserializer.descriptor.isNullable
+        return if (isNullabilitySupported || decodeNotNullMark()) {
+            decodeSerializableValue(deserializer)
+        } else decodeNull()
+    }
+
+    @ExperimentalSerializationApi
+    override fun decodeNull(): Nothing? = null
+
+    override fun decodeInline(descriptor: SerialDescriptor): Decoder = this
 }
-
-fun <T> ByteBuf.decode(deserializer: DeserializationStrategy<T>): T {
-    return ByteBufDecoder(this, EmptySerializersModule())
-        .decodeSerializableValue(deserializer)
-}
-
-inline fun <reified T> ByteBuf.decode(): T = decode(serializer())
-
