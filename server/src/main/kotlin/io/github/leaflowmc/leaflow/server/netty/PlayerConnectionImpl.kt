@@ -2,15 +2,18 @@ package io.github.leaflowmc.leaflow.server.netty
 
 import io.github.leaflowmc.leaflow.common.api.Disposable
 import io.github.leaflowmc.leaflow.common.api.Tickable
+import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.common.utils.ticks
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.protocol.packets.Packet
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundDisconnectPacket
+import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundPluginMessagePacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginDisconnectPacket
 import io.github.leaflowmc.leaflow.protocol.packets.type.getClientProtocolFor
 import io.github.leaflowmc.leaflow.protocol.packets.type.getServerProtocolFor
+import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
 import io.github.leaflowmc.leaflow.server.LeaflowServer
 import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.ENCRYPTION_CIPHER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER_DECODER
@@ -19,11 +22,11 @@ import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_ENCODER
-import io.github.leaflowmc.leaflow.server.constants.TextConstants
 import io.github.leaflowmc.leaflow.server.constants.TextConstants.DISCONNECT_INVALID_PACKET
 import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
+import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessage
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.github.leaflowmc.leaflow.text.component.PlainTextComponent
 import io.github.leaflowmc.leaflow.text.component.TextComponent
@@ -32,6 +35,7 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import kotlinx.coroutines.*
+import kotlinx.serialization.KSerializer
 import org.apache.logging.log4j.LogManager
 import java.security.Key
 import javax.crypto.Cipher
@@ -67,6 +71,24 @@ class PlayerConnectionImpl(
 
     private fun tick() {
         (packetListener as? Tickable)?.tick()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : PluginMessage> sendPluginMessage(msg: T) {
+        val id = server.pluginMessages[msg::class]
+
+        if (id == null) {
+            error("plugin message ${msg::class} is not registered")
+        }
+
+        val seri = server.pluginMessages[id] as KSerializer<T>
+
+        sendPacket(
+            ClientboundPluginMessagePacket(
+                id,
+                byteBufBytes { encode(seri, msg) }
+            )
+        )
     }
 
     override fun disconnect(reason: TextComponent) {

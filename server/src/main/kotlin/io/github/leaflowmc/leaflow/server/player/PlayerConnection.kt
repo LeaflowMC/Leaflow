@@ -4,6 +4,7 @@ import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.server.LeaflowServer
+import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessage
 import io.github.leaflowmc.leaflow.text.component.TextComponent
 import io.netty.channel.ChannelInboundHandler
 import kotlinx.coroutines.Deferred
@@ -14,6 +15,8 @@ interface PlayerConnection : ChannelInboundHandler {
     val server: LeaflowServer
 
     val encryptionEnabled: Boolean
+
+    fun <T : PluginMessage> sendPluginMessage(msg: T)
 
     /**
      * Sends disconnect packet and closes the channel
