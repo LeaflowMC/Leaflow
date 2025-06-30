@@ -23,6 +23,11 @@ interface PlayerConnection : ChannelInboundHandler {
 
     val encryptionEnabled: Boolean
 
+    /**
+     * Sends plugin message [msg]
+     *
+     * @throws IllegalStateException if the message is not registered in `PluginMessages`
+     */
     fun <T : PluginMessage> sendPluginMessage(msg: T)
 
     /**
