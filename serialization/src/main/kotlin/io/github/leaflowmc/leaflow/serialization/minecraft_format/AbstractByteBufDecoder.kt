@@ -79,7 +79,6 @@ abstract class AbstractByteBufDecoder : Decoder, CompositeDecoder {
             // with no way to know how many were left over
             // so to find that out, we write that nbt tag again into a new byte array
             // and using its length move the reader index of the byte buffer
-            // TODO: write my own nbt library
 
             val startIndex = buffer.readerIndex()
 
