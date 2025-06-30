@@ -61,6 +61,8 @@ class ServerLoginPacketListenerImpl(
     }
 
     private fun finishLogin(profile: GameProfile) {
+        playerConnection.finishLogin(profile)
+
         playerConnection.sendPacket(
             ClientboundLoginSuccessPacket(profile)
         )

@@ -1,5 +1,6 @@
 package io.github.leaflowmc.leaflow.server.netty
 
+import io.github.leaflowmc.leaflow.common.GameProfile
 import io.github.leaflowmc.leaflow.common.api.Tickable
 import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.common.utils.ticks
@@ -26,6 +27,7 @@ import io.github.leaflowmc.leaflow.server.encryption.PacketDecryptor
 import io.github.leaflowmc.leaflow.server.encryption.PacketEncryptor
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
 import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessage
+import io.github.leaflowmc.leaflow.server.player.Player
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.github.leaflowmc.leaflow.text.component.PlainTextComponent
 import io.github.leaflowmc.leaflow.text.component.TextComponent
@@ -34,6 +36,7 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.KSerializer
 import org.apache.logging.log4j.LogManager
 import java.security.Key
@@ -58,6 +61,10 @@ class PlayerConnectionImpl(
 
     private lateinit var channel: Channel
     private val scope = CoroutineScope(Dispatchers.IO)
+
+    private val _player = CompletableDeferred<Player>(scope.coroutineContext.job)
+    override val player: Deferred<Player>
+        get() = _player
 
     init {
         scope.launch {
@@ -88,6 +95,13 @@ class PlayerConnectionImpl(
                 byteBufBytes { encode(seri, msg) }
             )
         )
+    }
+
+    override fun finishLogin(profile: GameProfile) {
+        check(!_player.isCompleted) { "player already exists" }
+
+        val player = server.factory.createPlayer(this)
+        this._player.complete(player)
     }
 
     override fun disconnect(reason: TextComponent) {
