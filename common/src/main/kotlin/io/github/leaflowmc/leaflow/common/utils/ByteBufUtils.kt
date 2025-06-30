@@ -1,6 +1,8 @@
 package io.github.leaflowmc.leaflow.common.utils
 
 import io.netty.buffer.ByteBuf
+import io.netty.buffer.Unpooled
+import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
 fun ByteBuf.readVarInt(): Int {
@@ -44,4 +46,16 @@ fun ByteBuf.writeString(str: String) {
 fun ByteBuf.readPrefixedString(): String {
     val length = readVarInt()
     return readString(length, StandardCharsets.UTF_8)
+}
+
+inline fun byteBufBytes(block: ByteBuf.() -> Unit): ByteArray {
+    val buffer = Unpooled.buffer()
+    buffer.block()
+
+    val bytes = ByteArray(buffer.readableBytes())
+
+    buffer.readBytes(bytes)
+    buffer.release()
+
+    return bytes
 }

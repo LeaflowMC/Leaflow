@@ -7,10 +7,12 @@ import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAliveP
 import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundPluginMessagePacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ServerboundPongPacket
+import io.github.leaflowmc.leaflow.serialization.minecraft_format.decode
 import io.github.leaflowmc.leaflow.server.constants.TextConstants
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerCommonPacketListener
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import io.github.leaflowmc.leaflow.text.component.TranslatedTextComponent
+import io.netty.buffer.Unpooled
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import org.apache.logging.log4j.LogManager
@@ -89,6 +91,16 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
     }
 
     override fun pluginMessage(packet: ServerboundPluginMessagePacket) {
+        val seri = playerConnection.server.pluginMessages[packet.id]
+
+        if (seri == null) {
+            LOGGER.warn("received unknown plugin message: ${packet.id}}")
+            return
+        }
+
+        val buffer = Unpooled.wrappedBuffer(packet.data)
+        val msg = buffer.decode(seri)
+        msg.handle(playerConnection)
     }
 
     override fun dispose() {

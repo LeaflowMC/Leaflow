@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
-import io.github.leaflowmc.leaflow.commonTest.utils.byteBufBytes
+import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.decode
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
 import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer

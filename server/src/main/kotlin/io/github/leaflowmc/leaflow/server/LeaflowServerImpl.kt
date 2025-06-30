@@ -16,6 +16,7 @@ import io.github.leaflowmc.leaflow.server.netty.PacketDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketEncoder
 import io.github.leaflowmc.leaflow.server.netty.PacketSizeDecoder
 import io.github.leaflowmc.leaflow.server.netty.PacketSizeEncoder
+import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessages
 import io.github.leaflowmc.leaflow.text.component.TextComponent
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
@@ -34,7 +35,8 @@ class LeaflowServerImpl(
     override val port: Int,
     override val factory: LeaflowFactory,
     override val motd: TextComponent?,
-    override val authEnabled: Boolean
+    override val authEnabled: Boolean,
+    override val pluginMessages: PluginMessages
 ) : LeaflowServer {
     companion object {
         val LOGGER: Logger = LogManager.getLogger()
@@ -91,9 +93,10 @@ class LeaflowServerImpl(
         var factory: LeaflowFactory = LeaflowFactoryImpl
         var motd: TextComponent? = null
         var authEnabled = false
+        val pluginMessages = PluginMessages.Builder()
 
         fun build(): LeaflowServerImpl {
-            return LeaflowServerImpl(address, port, factory, motd, authEnabled)
+            return LeaflowServerImpl(address, port, factory, motd, authEnabled, pluginMessages.build())
         }
     }
 }

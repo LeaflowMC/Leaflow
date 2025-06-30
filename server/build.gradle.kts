@@ -1,5 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.1.20"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 repositories {
@@ -16,6 +17,7 @@ dependencies {
     implementation(libs.netty.all)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.bundles.kotlinx.serialization)
+    implementation(libs.fastutil)
 
     implementation(libs.log4j.api)
 

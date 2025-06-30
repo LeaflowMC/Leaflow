@@ -1,5 +1,6 @@
 package io.github.leaflowmc.leaflow.server
 
+import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessages
 import io.github.leaflowmc.leaflow.text.component.TextComponent
 import java.security.KeyPair
 
@@ -16,6 +17,11 @@ interface LeaflowServer {
     val motd: TextComponent?
     val authEnabled: Boolean
     val keyPair: KeyPair
+
+    /**
+     * Plugin messages "registry"
+     */
+    val pluginMessages: PluginMessages
 
     /**
      * Start the server.
