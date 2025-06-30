@@ -1,6 +1,5 @@
 package io.github.leaflowmc.leaflow.server.packets
 
-import io.github.leaflowmc.leaflow.common.api.Disposable
 import io.github.leaflowmc.leaflow.common.api.Tickable
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundKeepAlivePacket
 import io.github.leaflowmc.leaflow.protocol.packets.common.ServerboundKeepAlivePacket
@@ -24,7 +23,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class, ExperimentalAtomicApi::class)
-abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListener, Tickable, Disposable {
+abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListener, Tickable {
     companion object {
         private val LOGGER = LogManager.getLogger()
         const val KEEP_ALIVE_DELAY = 15 * 1000
@@ -101,8 +100,5 @@ abstract class ServerCommonPacketListenerImpl : LeaflowServerCommonPacketListene
         val buffer = Unpooled.wrappedBuffer(packet.data)
         val msg = buffer.decode(seri)
         msg.handle(playerConnection)
-    }
-
-    override fun dispose() {
     }
 }
