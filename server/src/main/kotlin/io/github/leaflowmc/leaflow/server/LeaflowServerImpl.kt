@@ -93,7 +93,7 @@ class LeaflowServerImpl(
         var port = 25565
         var factory: LeaflowFactory = LeaflowFactoryImpl
         var motd: TextComponent? = null
-        var authEnabled = false
+        var authEnabled = true
         val pluginMessages = PluginMessages.Builder()
         var brand = "leaflow"
 
