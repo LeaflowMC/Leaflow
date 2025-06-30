@@ -35,8 +35,9 @@ class LeaflowServerImpl(
     override val port: Int,
     override val factory: LeaflowFactory,
     override val motd: TextComponent?,
+    override val brand: String,
     override val authEnabled: Boolean,
-    override val pluginMessages: PluginMessages
+    override val pluginMessages: PluginMessages,
 ) : LeaflowServer {
     companion object {
         val LOGGER: Logger = LogManager.getLogger()
@@ -94,9 +95,18 @@ class LeaflowServerImpl(
         var motd: TextComponent? = null
         var authEnabled = false
         val pluginMessages = PluginMessages.Builder()
+        var brand = "leaflow"
 
         fun build(): LeaflowServerImpl {
-            return LeaflowServerImpl(address, port, factory, motd, authEnabled, pluginMessages.build())
+            return LeaflowServerImpl(
+                address,
+                port,
+                factory,
+                motd,
+                brand,
+                authEnabled,
+                pluginMessages.build(),
+            )
         }
     }
 }

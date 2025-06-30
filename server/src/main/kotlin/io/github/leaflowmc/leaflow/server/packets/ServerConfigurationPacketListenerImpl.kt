@@ -6,6 +6,7 @@ import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundAck
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundClientInfoPacket
 import io.github.leaflowmc.leaflow.protocol.packets.configuration.ServerboundKnownPacksPacket
 import io.github.leaflowmc.leaflow.server.packets.api.LeaflowServerConfigurationPacketListener
+import io.github.leaflowmc.leaflow.server.packets.plugin_message.BrandPluginMessage
 import io.github.leaflowmc.leaflow.server.player.PlayerConnection
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -14,6 +15,10 @@ class ServerConfigurationPacketListenerImpl(
     override val playerConnection: PlayerConnection
 ) : ServerCommonPacketListenerImpl(), LeaflowServerConfigurationPacketListener {
     init {
+        playerConnection.sendPluginMessage(
+            BrandPluginMessage(playerConnection.server.brand)
+        )
+
         playerConnection.sendPacket(
             ClientboundFinishConfigurationPacket()
         )
