@@ -36,7 +36,6 @@ import io.netty.channel.Channel
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.asCompletableFuture
 import kotlinx.serialization.KSerializer
 import org.apache.logging.log4j.LogManager
 import java.security.Key
@@ -100,7 +99,7 @@ class PlayerConnectionImpl(
     override fun finishLogin(profile: GameProfile) {
         check(!_player.isCompleted) { "player already exists" }
 
-        val player = server.factory.createPlayer(this)
+        val player = server.factory.createPlayer(this, profile)
         this._player.complete(player)
     }
 

@@ -1,5 +1,6 @@
 package io.github.leaflowmc.leaflow.server
 
+import io.github.leaflowmc.leaflow.common.GameProfile
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
@@ -19,8 +20,8 @@ import io.github.leaflowmc.leaflow.server.player.PlayerImpl
 open class LeaflowFactoryImpl protected constructor() : LeaflowFactory {
     companion object Instance : LeaflowFactoryImpl()
 
-    override fun createPlayer(networkState: PlayerConnection): Player {
-        return PlayerImpl(networkState)
+    override fun createPlayer(networkState: PlayerConnection, gameProfile: GameProfile): Player {
+        return PlayerImpl(networkState, gameProfile)
     }
 
     override fun createPlayerConnection(server: LeaflowServer, protocol: ProtocolStage): PlayerConnection {
