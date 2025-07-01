@@ -22,13 +22,18 @@ class PacketEncoder(
     override fun encode(ctx: ChannelHandlerContext, msg: Packet<*>, out: ByteBuf) {
         val id = protocolInfo[msg::class]
 
-        if (id == -1) {
-            LOGGER.error("can't encode packet with protocol ${protocolInfo.protocolStage}: '${msg::class.simpleName}'")
+        if(id == -1) {
+            val cause = IllegalStateException("can't encode packet with protocol ${protocolInfo.protocolStage}: '${msg::class.simpleName}'")
+            ctx.fireExceptionCaught(cause)
             return
         }
 
-        val seri = checkNotNull(protocolInfo[id]) {
-            "got a valid id $id but serializer was null in protocol ${protocolInfo.protocolStage} (${msg::class.simpleName})"
+        val seri = protocolInfo[id]
+
+        if (seri == null) {
+            val cause = IllegalStateException("couldn't get serializer for ${msg::class.simpleName} [$id]")
+            ctx.fireExceptionCaught(cause)
+            return
         }
 
         out.writeVarInt(id)
