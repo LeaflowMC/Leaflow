@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
+    `maven-publish`
 }
 
 repositories {
@@ -34,3 +35,14 @@ java {
     }
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = project.group.toString()
+            artifactId = "leaflow-serialization"
+            version = project.version.toString()
+
+            from(components["java"])
+        }
+    }
+}
