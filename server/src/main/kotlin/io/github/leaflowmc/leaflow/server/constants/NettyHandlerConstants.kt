@@ -7,6 +7,9 @@ object NettyHandlerConstants {
     const val LENGTH_ENCODER = "length_encoder"
     const val LENGTH_DECODER = "length_decoder"
 
+    const val COMPRESSION_ENCODER = "zlib_encoder"
+    const val COMPRESSION_DECODER = "zlib_decoder"
+
     const val PACKET_ENCODER = "encoder"
     const val PACKET_DECODER = "decoder"
 

@@ -31,6 +31,12 @@ interface LeaflowServer {
     val keyPair: KeyPair
 
     /**
+     * Default compression threshold. Negative values disable the compression.
+     * Packets longer than this will be compressed
+     */
+    val compressionThreshold: Int
+
+    /**
      * Plugin messages "registry"
      */
     val pluginMessages: PluginMessages

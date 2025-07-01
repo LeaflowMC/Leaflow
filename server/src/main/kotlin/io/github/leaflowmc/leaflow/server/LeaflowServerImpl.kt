@@ -42,6 +42,7 @@ class LeaflowServerImpl(
     override val motd: TextComponent?,
     override val brand: String,
     override val authEnabled: Boolean,
+    override val compressionThreshold: Int,
     override val pluginMessages: PluginMessages,
 ) : LeaflowServer {
     companion object {
@@ -101,6 +102,7 @@ class LeaflowServerImpl(
         var factory: LeaflowFactory = LeaflowFactoryImpl
         var motd: TextComponent? = null
         var authEnabled = true
+        var compressionThreshold = 256
         val pluginMessages = PluginMessages.Builder()
         var brand = "leaflow"
 
@@ -112,6 +114,7 @@ class LeaflowServerImpl(
                 motd,
                 brand,
                 authEnabled,
+                compressionThreshold,
                 pluginMessages.build(),
             )
         }
