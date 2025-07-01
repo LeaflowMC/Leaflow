@@ -13,6 +13,7 @@ import io.github.leaflowmc.leaflow.protocol.packets.configuration.ClientboundRes
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundEncryptionRequestPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginDisconnectPacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginSuccessPacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundSetCompressionPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPingPacket
 import io.github.leaflowmc.leaflow.protocol.packets.ping.ClientboundPongPacket
 import io.github.leaflowmc.leaflow.protocol.packets.play.clientbound.ClientboundAbilitiesPacket
@@ -42,7 +43,7 @@ val ClientLoginPackets = createProtocolInfo(ProtocolStage.LOGIN) {
     addPacket<ClientboundLoginDisconnectPacket>()
     addPacket<ClientboundEncryptionRequestPacket>()
     addPacket<ClientboundLoginSuccessPacket>()
-    skipPacket("SET_COMPRESSION")
+    addPacket<ClientboundSetCompressionPacket>()
     skipPacket("LOGIN_PLUGIN_REQUEST")
     skipPacket("COOKIE_REQUEST")
 }

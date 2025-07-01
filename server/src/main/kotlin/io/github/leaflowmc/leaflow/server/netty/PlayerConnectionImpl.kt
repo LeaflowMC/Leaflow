@@ -2,6 +2,7 @@ package io.github.leaflowmc.leaflow.server.netty
 
 import io.github.leaflowmc.leaflow.common.GameProfile
 import io.github.leaflowmc.leaflow.common.api.Tickable
+import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.common.utils.ticks
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
@@ -11,6 +12,7 @@ import io.github.leaflowmc.leaflow.protocol.packets.Packet
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundDisconnectPacket
 import io.github.leaflowmc.leaflow.protocol.packets.common.ClientboundPluginMessagePacket
 import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundLoginDisconnectPacket
+import io.github.leaflowmc.leaflow.protocol.packets.login.ClientboundSetCompressionPacket
 import io.github.leaflowmc.leaflow.protocol.packets.type.getClientProtocolFor
 import io.github.leaflowmc.leaflow.protocol.packets.type.getServerProtocolFor
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
@@ -18,6 +20,8 @@ import io.github.leaflowmc.leaflow.server.LeaflowServer
 import io.github.leaflowmc.leaflow.server.constants.EncryptionConstants.ENCRYPTION_CIPHER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.CIPHER_ENCODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.COMPRESSION_DECODER
+import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.COMPRESSION_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_DECODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.LENGTH_ENCODER
 import io.github.leaflowmc.leaflow.server.constants.NettyHandlerConstants.PACKET_DECODER
@@ -66,6 +70,38 @@ class PlayerConnectionImpl(
     private val _player = CompletableDeferred<Player>(scope.coroutineContext.job)
     override val player: Deferred<Player>
         get() = _player
+
+    override var compressionThreshold: Int = -1
+        set(value) {
+            if (field >= 0 != value >= 0) {
+                if(outboundProtocol != ProtocolStage.LOGIN) {
+                    return
+                }
+                sendPacket(ClientboundSetCompressionPacket(VarInt(value)))
+            }
+
+            if (value >= 0) {
+                val encoder = channel.pipeline().get(COMPRESSION_ENCODER)
+
+                if (channel.pipeline().get(COMPRESSION_DECODER) == null) {
+                    channel.pipeline().addBefore(PACKET_DECODER, COMPRESSION_DECODER, CompressionDecoder())
+                }
+                if (encoder is CompressionEncoder) {
+                    encoder.threshold = value
+                } else {
+                    channel.pipeline().addBefore(PACKET_ENCODER, COMPRESSION_ENCODER, CompressionEncoder(value))
+                }
+            } else {
+                if (channel.pipeline().get(COMPRESSION_ENCODER) != null) {
+                    channel.pipeline().remove(COMPRESSION_ENCODER)
+                }
+                if (channel.pipeline().get(COMPRESSION_DECODER) != null) {
+                    channel.pipeline().remove(COMPRESSION_DECODER)
+                }
+            }
+
+            field = value
+        }
 
     init {
         scope.launch {

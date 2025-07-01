@@ -2,14 +2,12 @@ package io.github.leaflowmc.leaflow.server.player
 
 import io.github.leaflowmc.leaflow.common.GameProfile
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
-import io.github.leaflowmc.leaflow.protocol.listener.server.ServerPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import io.github.leaflowmc.leaflow.server.LeaflowServer
 import io.github.leaflowmc.leaflow.server.packets.plugin_message.PluginMessage
 import io.github.leaflowmc.leaflow.text.component.TextComponent
 import io.netty.channel.ChannelInboundHandler
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.flow.SharedFlow
 import java.security.Key
 import kotlin.time.Duration
 
@@ -22,6 +20,18 @@ interface PlayerConnection : ChannelInboundHandler {
     val player: Deferred<Player>
 
     val encryptionEnabled: Boolean
+
+    /**
+     * Compression threshold. Negative values disable the compression
+     *
+     * Packets longer than this will be compressed
+     *
+     * cannot be turned on/off during non-login protocol stage. (wont have any effect)
+     *
+     * It's fine, however, to change already enabled compression threshold at any moment,
+     * because vanilla clients accept compressed packets regardless of their size
+     */
+    var compressionThreshold: Int
 
     /**
      * Sends plugin message [msg]
