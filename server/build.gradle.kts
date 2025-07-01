@@ -14,7 +14,8 @@ dependencies {
     implementation(project(":serialization"))
     api(project(":text"))
 
-    implementation(libs.netty.all)
+    implementation(libs.bundles.netty)
+    api(libs.netty.transport)
     api(libs.kotlinx.coroutines)
     implementation(libs.bundles.kotlinx.serialization)
     implementation(libs.fastutil)
