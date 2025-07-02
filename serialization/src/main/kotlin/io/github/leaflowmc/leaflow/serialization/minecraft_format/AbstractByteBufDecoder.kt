@@ -58,9 +58,13 @@ abstract class AbstractByteBufDecoder : Decoder, CompositeDecoder {
     }
 
     final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
-        return when(enumDescriptor.protocolEnumKind()) {
+        val annotation = lastElementAnnotations
+            ?.firstNotNullOfOrNull { it as ProtocolEnumKind }
+
+        return when(annotation?.kind) {
             ProtocolEnumKind.Kind.UNSIGNED_BYTE -> buffer.readByte().toUByte().toInt()
-            ProtocolEnumKind.Kind.VAR_INT -> buffer.readVarInt()
+            ProtocolEnumKind.Kind.VAR_INT,
+            null -> buffer.readVarInt()
         }
     }
 

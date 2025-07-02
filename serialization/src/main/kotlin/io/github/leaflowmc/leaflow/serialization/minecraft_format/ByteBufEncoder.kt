@@ -74,9 +74,13 @@ class ByteBufEncoder(
     }
 
     override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
-        when (enumDescriptor.protocolEnumKind()) {
+        val annotation = lastElementAnnotations
+            ?.firstNotNullOfOrNull { it as ProtocolEnumKind }
+
+        when(annotation?.kind) {
             ProtocolEnumKind.Kind.UNSIGNED_BYTE -> byteBuf.writeByte(index)
-            ProtocolEnumKind.Kind.VAR_INT -> byteBuf.writeVarInt(index)
+            ProtocolEnumKind.Kind.VAR_INT,
+            null -> byteBuf.writeVarInt(index)
         }
     }
 
