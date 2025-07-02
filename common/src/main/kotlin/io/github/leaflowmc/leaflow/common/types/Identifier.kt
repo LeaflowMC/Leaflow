@@ -65,3 +65,6 @@ fun Identifier.asMinimalString(): String {
         asString()
     }
 }
+
+operator fun Identifier.component1() = namespace
+operator fun Identifier.component2() = path
