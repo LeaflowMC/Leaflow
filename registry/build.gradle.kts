@@ -11,6 +11,14 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":common"))
+    implementation(project(":serialization"))
+    implementation(project(":text"))
+
+    api(libs.kyori.adventure.nbt)
+
+    implementation(libs.kotlinx.serialization.core)
+
     testImplementation(kotlin("test"))
 }
 
