@@ -1,4 +1,4 @@
-package io.github.leaflowmc.leaflow.common
+package io.github.leaflowmc.leaflow.common.types
 
 import kotlinx.serialization.Serializable
 

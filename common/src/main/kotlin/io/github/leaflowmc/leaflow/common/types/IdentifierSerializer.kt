@@ -1,4 +1,4 @@
-package io.github.leaflowmc.leaflow.common
+package io.github.leaflowmc.leaflow.common.types
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

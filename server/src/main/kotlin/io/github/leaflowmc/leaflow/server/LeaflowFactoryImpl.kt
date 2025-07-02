@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.server
 
-import io.github.leaflowmc.leaflow.common.GameProfile
+import io.github.leaflowmc.leaflow.common.types.GameProfile
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerHandshakePacketListener
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener

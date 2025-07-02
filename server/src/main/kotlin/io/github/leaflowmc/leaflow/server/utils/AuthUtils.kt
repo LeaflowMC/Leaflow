@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.server.utils
 
-import io.github.leaflowmc.leaflow.common.GameProfile
+import io.github.leaflowmc.leaflow.common.types.GameProfile
 import io.github.leaflowmc.leaflow.common.serializer.UUIDAsStringSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule

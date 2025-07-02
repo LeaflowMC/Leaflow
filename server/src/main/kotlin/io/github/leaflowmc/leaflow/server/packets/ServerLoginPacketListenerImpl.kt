@@ -1,7 +1,6 @@
 package io.github.leaflowmc.leaflow.server.packets
 
-import io.github.leaflowmc.leaflow.common.GameProfile
-import io.github.leaflowmc.leaflow.common.utils.VarInt
+import io.github.leaflowmc.leaflow.common.types.GameProfile
 import io.github.leaflowmc.leaflow.protocol.ProtocolStage
 import io.github.leaflowmc.leaflow.protocol.listener.server.ServerLoginPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.login.*

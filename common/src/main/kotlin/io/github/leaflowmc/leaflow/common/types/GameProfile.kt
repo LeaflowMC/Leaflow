@@ -1,4 +1,4 @@
-package io.github.leaflowmc.leaflow.common
+package io.github.leaflowmc.leaflow.common.types
 
 import io.github.leaflowmc.leaflow.common.serializer.UUIDAsLongs
 import io.github.leaflowmc.leaflow.common.utils.UUIDUtils

@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.common.test
 
-import io.github.leaflowmc.leaflow.common.GameProfile
+import io.github.leaflowmc.leaflow.common.types.GameProfile
 import io.github.leaflowmc.leaflow.common.serializer.UUIDAsStringSerializer
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt

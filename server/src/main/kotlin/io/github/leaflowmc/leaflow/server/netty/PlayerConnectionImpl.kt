@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.server.netty
 
-import io.github.leaflowmc.leaflow.common.GameProfile
+import io.github.leaflowmc.leaflow.common.types.GameProfile
 import io.github.leaflowmc.leaflow.common.api.Tickable
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.byteBufBytes

@@ -1,8 +1,7 @@
 package io.github.leaflowmc.leaflow.common.test
 
-import io.github.leaflowmc.leaflow.common.Identifier
-import io.github.leaflowmc.leaflow.common.IdentifierImpl
-import io.github.leaflowmc.leaflow.common.asString
+import io.github.leaflowmc.leaflow.common.types.Identifier
+import io.github.leaflowmc.leaflow.common.types.IdentifierImpl
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals

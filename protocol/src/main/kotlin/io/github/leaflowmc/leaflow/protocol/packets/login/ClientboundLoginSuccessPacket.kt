@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.protocol.packets.login
 
-import io.github.leaflowmc.leaflow.common.GameProfile
+import io.github.leaflowmc.leaflow.common.types.GameProfile
 import io.github.leaflowmc.leaflow.protocol.listener.client.ClientLoginPacketListener
 import io.github.leaflowmc.leaflow.protocol.packets.ClientPacket
 import kotlinx.serialization.Serializable
