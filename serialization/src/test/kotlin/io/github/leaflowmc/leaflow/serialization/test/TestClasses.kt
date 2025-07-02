@@ -54,7 +54,9 @@ data class ClassWithEnum(
     @ProtocolEnumKind(ProtocolEnumKind.Kind.UNSIGNED_BYTE)
     val byteEnum: TestEnum,
     @ProtocolEnumKind(ProtocolEnumKind.Kind.VAR_INT)
-    val varIntEnum: TestEnum
+    val varIntEnum: TestEnum,
+    @ProtocolEnumKind(ProtocolEnumKind.Kind.STRING)
+    val stringEnum: TestEnum
 )
 
 @Suppress("EqualsOrHashCode")

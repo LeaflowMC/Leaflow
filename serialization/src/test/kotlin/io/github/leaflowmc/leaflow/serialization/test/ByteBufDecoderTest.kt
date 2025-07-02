@@ -145,13 +145,15 @@ class ByteBufDecoderTest {
         val output = ClassWithEnum(
             69,
             TestEnum.ONE,
-            TestEnum.TWO
+            TestEnum.TWO,
+            TestEnum.ZERO
         )
 
         val input = Unpooled.buffer().apply {
             writeInt(69)
             writeByte(1)
             writeVarInt(2)
+            writePrefixedString("zero")
         }
 
         assertEquals(

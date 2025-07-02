@@ -81,6 +81,10 @@ class ByteBufEncoder(
             ProtocolEnumKind.Kind.UNSIGNED_BYTE -> byteBuf.writeByte(index)
             ProtocolEnumKind.Kind.VAR_INT,
             null -> byteBuf.writeVarInt(index)
+            ProtocolEnumKind.Kind.STRING -> {
+                val str = enumDescriptor.getElementName(index)
+                byteBuf.writePrefixedString(str.lowercase())
+            }
         }
     }
 

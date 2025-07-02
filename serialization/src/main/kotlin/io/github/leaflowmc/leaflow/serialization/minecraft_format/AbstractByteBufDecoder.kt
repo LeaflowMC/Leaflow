@@ -65,6 +65,11 @@ abstract class AbstractByteBufDecoder : Decoder, CompositeDecoder {
             ProtocolEnumKind.Kind.UNSIGNED_BYTE -> buffer.readByte().toUByte().toInt()
             ProtocolEnumKind.Kind.VAR_INT,
             null -> buffer.readVarInt()
+            ProtocolEnumKind.Kind.STRING -> {
+                val enum = buffer.readPrefixedString()
+
+                return enumDescriptor.getElementIndex(enum.uppercase())
+            }
         }
     }
 

@@ -133,13 +133,15 @@ class ByteBufEncoderTest {
         val input = ClassWithEnum(
             69,
             TestEnum.ONE,
-            TestEnum.TWO
+            TestEnum.TWO,
+            TestEnum.ZERO
         )
 
         val output = byteBufBytes {
             writeInt(69)
             writeByte(1)
             writeVarInt(2)
+            writePrefixedString("zero")
         }
 
         assertContentEquals(

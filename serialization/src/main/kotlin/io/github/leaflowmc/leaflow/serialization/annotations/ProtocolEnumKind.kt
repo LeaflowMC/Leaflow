@@ -14,7 +14,8 @@ annotation class ProtocolEnumKind(val kind: Kind) {
 
     enum class Kind {
         UNSIGNED_BYTE,
-        VAR_INT;
+        VAR_INT,
+        STRING;
     }
 }
 
