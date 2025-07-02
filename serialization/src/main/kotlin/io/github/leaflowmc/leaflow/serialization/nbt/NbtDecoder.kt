@@ -19,6 +19,11 @@ import java.util.*
 abstract class NbtDecoder : AbstractDecoder() {
     abstract fun decodeNbt(): BinaryTag
 
+    final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int {
+        val name = decodeString().uppercase()
+        return enumDescriptor.getElementIndex(name)
+    }
+
     final override fun decodeValue(): Any {
         return checkNotNull(decodeNbt().getPrimitive()) { "Is not a primitive" }
     }

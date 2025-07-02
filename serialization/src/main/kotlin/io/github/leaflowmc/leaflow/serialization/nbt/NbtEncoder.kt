@@ -21,6 +21,11 @@ import java.util.*
 abstract class NbtEncoder : AbstractEncoder() {
     abstract fun encodeNbt(value: BinaryTag)
 
+    final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) {
+        val name = enumDescriptor.getElementName(index).lowercase()
+        encodeValue(name)
+    }
+
     final override fun encodeValue(value: Any) = encodeNbt(value.toBinaryTag())
     final override fun encodeNull() {}
 

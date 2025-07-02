@@ -1,5 +1,6 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
+import io.github.leaflowmc.leaflow.serialization.nbt.decodeFromNbt
 import io.github.leaflowmc.leaflow.serialization.nbt.encodeToNbt
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.IntArrayBinaryTag
@@ -76,5 +77,27 @@ class NbtEncoderTest {
             .build()
 
         assertEquals(output, encodeToNbt(input))
+    }
+
+    @Test
+    fun testEnums() {
+        val input = ClassWithEnum(
+            69,
+            TestEnum.ZERO,
+            TestEnum.ONE,
+            TestEnum.TWO
+        )
+
+        val output = CompoundBinaryTag.builder()
+            .putInt("number", 69)
+            .putString("byteEnum", "zero")
+            .putString("varIntEnum", "one")
+            .putString("stringEnum", "two")
+            .build()
+
+        assertEquals(
+            output,
+            encodeToNbt(input)
+        )
     }
 }

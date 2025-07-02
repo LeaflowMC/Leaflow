@@ -79,4 +79,26 @@ class NbtDecoderTest {
 
         assertEquals(output, decodeFromNbt(input))
     }
+
+    @Test
+    fun testEnums() {
+        val output = ClassWithEnum(
+            69,
+            TestEnum.ZERO,
+            TestEnum.ONE,
+            TestEnum.TWO
+        )
+
+        val input = CompoundBinaryTag.builder()
+            .putInt("number", 69)
+            .putString("byteEnum", "zero")
+            .putString("varIntEnum", "one")
+            .putString("stringEnum", "two")
+            .build()
+
+        assertEquals(
+            output,
+            decodeFromNbt(input)
+        )
+    }
 }
