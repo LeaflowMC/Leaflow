@@ -5,8 +5,11 @@ import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
 import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
+import io.github.leaflowmc.leaflow.serialization.annotations.NotLengthPrefixed
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
 import io.netty.buffer.ByteBufOutputStream
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
 import net.kyori.adventure.nbt.BinaryTagIO
 import net.kyori.adventure.nbt.CompoundBinaryTag
 import net.kyori.adventure.nbt.ListBinaryTag
@@ -88,7 +91,7 @@ class ByteBufEncoderTest {
     @Test
     fun testWithNbt() {
         val input = Something(
-            CarAsNbt(
+            Car(
                 0x00ff00,
                 listOf(
                     Person("p1k0chu", 69),

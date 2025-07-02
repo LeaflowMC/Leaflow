@@ -1,6 +1,6 @@
 package io.github.leaflowmc.leaflow.serialization.test
 
-import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
+import io.github.leaflowmc.leaflow.serialization.annotations.AsNbt
 import io.github.leaflowmc.leaflow.serialization.annotations.NotLengthPrefixed
 import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -14,11 +14,12 @@ data class Person(val name: String, val age: Int)
 @Serializable
 data class Car(val color: Int, val passengers: Collection<Person>)
 
-object CarAsNbtSerializer : AnyToNbtSerializer<Car>(Car.serializer())
-typealias CarAsNbt = @Serializable(CarAsNbtSerializer::class) Car
-
 @Serializable
-data class Something(val car: CarAsNbt, val person: Person)
+data class Something(
+    @AsNbt
+    val car: Car,
+    val person: Person
+)
 
 @OptIn(ExperimentalSerializationApi::class)
 @Serializable

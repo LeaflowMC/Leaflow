@@ -1,9 +1,9 @@
 package io.github.leaflowmc.leaflow.serialization.minecraft_format
 
-import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
 import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.readPrefixedString
 import io.github.leaflowmc.leaflow.common.utils.readVarInt
+import io.github.leaflowmc.leaflow.serialization.annotations.AsNbt
 import io.github.leaflowmc.leaflow.serialization.annotations.NotLengthPrefixed
 import io.github.leaflowmc.leaflow.serialization.annotations.ProtocolEnumKind
 import io.github.leaflowmc.leaflow.serialization.annotations.protocolEnumKind
@@ -14,7 +14,6 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
-import kotlinx.serialization.descriptors.elementNames
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import net.kyori.adventure.nbt.BinaryTagIO
@@ -73,7 +72,7 @@ abstract class AbstractByteBufDecoder : Decoder, CompositeDecoder {
     override fun <T> decodeSerializableValue(deserializer: DeserializationStrategy<T>): T {
         return if (deserializer.descriptor == varIntSerializer.descriptor) {
             VarInt(decodeVarInt()) as T
-        } else if (deserializer is AnyToNbtSerializer<T>) {
+        } else if (lastElementAnnotations?.any { it is AsNbt } == true) {
             // ugly workaround for adventure nbt being awesome
             // reading a binary tag will consume all the bytes in the buffer
             // with no way to know how many were left over
@@ -99,7 +98,7 @@ abstract class AbstractByteBufDecoder : Decoder, CompositeDecoder {
                         }
                 }
                 .let {
-                    decodeFromNbt(deserializer.surrogate, it)
+                    decodeFromNbt(deserializer, it)
                 }
         } else {
             super.decodeSerializableValue(deserializer)

@@ -4,9 +4,7 @@ import io.github.leaflowmc.leaflow.common.utils.VarInt
 import io.github.leaflowmc.leaflow.common.utils.writePrefixedString
 import io.github.leaflowmc.leaflow.common.utils.writeString
 import io.github.leaflowmc.leaflow.common.utils.writeVarInt
-import io.github.leaflowmc.leaflow.common.utils.byteBufBytes
 import io.github.leaflowmc.leaflow.serialization.minecraft_format.decode
-import io.github.leaflowmc.leaflow.serialization.minecraft_format.encode
 import io.netty.buffer.ByteBufOutputStream
 import io.netty.buffer.Unpooled
 import net.kyori.adventure.nbt.BinaryTagIO
@@ -105,7 +103,7 @@ class ByteBufDecoderTest {
     @Test
     fun testWithNbt() {
         val output = Something(
-            CarAsNbt(
+            Car(
                 0x00ff00,
                 listOf(
                     Person("p1k0chu", 69),
