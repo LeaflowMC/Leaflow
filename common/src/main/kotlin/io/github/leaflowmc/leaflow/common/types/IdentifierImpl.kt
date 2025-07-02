@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 data class IdentifierImpl(override val namespace: String, override val path: String) : Identifier {
     init {
         require(Identifier.isValidNamespace(namespace)) { "invalid namespace: $namespace" }
-        require(Identifier.isValidPath(path)) { "invalid value: $path" }
+        require(Identifier.isValidPath(path)) { "invalid path: $path" }
     }
 
     override fun toString(): String {
