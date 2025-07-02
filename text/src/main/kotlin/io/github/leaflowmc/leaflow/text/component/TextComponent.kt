@@ -1,6 +1,5 @@
 package io.github.leaflowmc.leaflow.text.component
 
-import io.github.leaflowmc.leaflow.common.serializer.AnyToNbtSerializer
 import io.github.leaflowmc.leaflow.common.serializer.AnyToStringJsonSerializer
 import io.github.leaflowmc.leaflow.text.ClickEvent
 import io.github.leaflowmc.leaflow.text.HoverEvent
@@ -61,7 +60,4 @@ object TextComponentAsStringSerializer : AnyToStringJsonSerializer<TextComponent
     TextComponent.serializer()
 )
 
-object TextComponentAsNbtSerializer : AnyToNbtSerializer<TextComponent>(TextComponent.serializer())
-
 typealias TextComponentAsString = @Serializable(TextComponentAsStringSerializer::class) TextComponent
-typealias TextComponentAsNbt = @Serializable(TextComponentAsNbtSerializer::class) TextComponent
